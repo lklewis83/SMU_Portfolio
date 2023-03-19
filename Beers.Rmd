@@ -89,14 +89,23 @@ ui <- fluidPage(
       
       # Copy the line below to make a select box ####
       # ALL VALUES MUST BE UNIQUE as A VECTOR IS CREATED OFF the EQUAL VALUES
-       selectInput("select", 
-                   label = h1("IBU or ABV Metrics"), 
+       selectInput("liquor",
+                   label = h1("IBU or ABV Metric Selection"), 
                     choices = c("IBU_Histogram" ="IBU_Histogram",
                                    "ABV_Histogram" ="ABV_Histogram",                                                              "IBU_BoxPlot" = "IBU_BoxPlot", 
                                    "ABV_BoxPlot" = "ABV_BoxPlot"), 
-                    selected = 1),
+                    ),
+
+       
+      # Second selection to select a state
+      selectInput("state", "Select a State", state.name,
+                  multiple = T,
+                  selected = "Connecticut"),     
+   
                     hr(),
-                    fluidRow(column(3, verbatimTextOutput("value"))),
+      
+                    fluidRow(column(3, verbatimTextOutput("value"))),      
+                   
 
     ),
     
@@ -109,8 +118,10 @@ ui <- fluidPage(
     )
   )
 )
+```
 
 
+```{r echo = FALSE}
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
   
@@ -124,18 +135,21 @@ server <- function(input, output) {
   # 2. Its output type is a plot
   output$distPlot <- renderPlot({
     
-    if(input$select == "IBU_Histogram")
+    plt_ds <- filter(plt_ds, plt_ds$Full_State == input$state)
+    
+    if(input$liquor == "IBU_Histogram")
     {
     x    <- plt_ds$IBU 
     
     bins <- seq(min(x), max(x), length.out = input$bins + 1)
     
+    
     hist(x, breaks = bins, col = "blue", border = "white",
          xlab = "IBU Values",
          ylab = "count",
-         main = "Histogram of IBU Values")
+         main = paste("Histogram of IBU Values Filtered By: " , plt_ds$Full_State))
     }
-    if(input$select == "ABV_Histogram")
+    if(input$liquor == "ABV_Histogram")
     {
     x    <- plt_ds$ABV 
     
@@ -144,9 +158,9 @@ server <- function(input, output) {
     hist(x, breaks = bins, col = "purple", border = "white",
          xlab = "ABV Values",
          ylab = "count",
-         main = "Histogram of ABV Values")
+         main = paste("Histogram of ABV Values Filtered By: " , plt_ds$Full_State))
     }
-    if(input$select == "IBU_BoxPlot")
+    if(input$liquor == "IBU_BoxPlot")
     {
     x    <- plt_ds$IBU  
     
@@ -155,9 +169,9 @@ server <- function(input, output) {
     boxplot(x, breaks = bins, col = "cyan", border = "white",
          xlab = "IBU Values",
          ylab = "count",
-         main = "Boxplot of IBU Values")
+         main = paste("Boxplot of IBU Values Filtered By: " , plt_ds$Full_State))
     }
-    if(input$select == "ABV_BoxPlot")
+    if(input$liquor == "ABV_BoxPlot")
     {
     x    <- plt_ds$ABV 
     
@@ -166,7 +180,7 @@ server <- function(input, output) {
     boxplot(x, breaks = bins, col = "plum", border = "white",
          xlab = "ABV Values",
          ylab = "count",
-         main = "Boxplot of ABV Values")
+         main = paste("Boxplot of ABV Values Filtered By: "  , plt_ds$Full_State))
     }
   })
   

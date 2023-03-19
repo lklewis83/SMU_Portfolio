@@ -5,9 +5,9 @@ account: blackjuliet
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8609319
-bundleId: 6978995
+bundleId: 6979218
 url: https://blackjuliet.shinyapps.io/Beers/
-when: 1679246631.47622
-lastSyncTime: 1679246631.47624
+when: 1679253356.46194
+lastSyncTime: 1679253356.46195
 asMultiple: FALSE
 asStatic: FALSE
