@@ -1,8 +1,8 @@
-name: "Website"
+name: "Lani Lewis"
 navbar:
-  title: "Website"
+  title: "SMU Data Science Protfolio"
   left:
     - text: "Home"
       href: index.html
-    - text: "Unit 2"
-      href: Lani_Lewis_Unit2.html
+    - text: "Case Study 1"
+      href: EDA1.html
