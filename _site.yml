@@ -1,0 +1,8 @@
+name: "Website"
+navbar:
+  title: "Website"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Unit 2"
+      href: Lani_Lewis_Unit2.html
