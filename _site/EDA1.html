@@ -250,6 +250,9 @@ $(document).ready(function () {
 <li>
   <a href="EDA1.html">Case Study 1</a>
 </li>
+<li>
+  <a href="Barbie.Bungee_BatMan.html">Barbie Bungee Activity</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -735,8 +738,7 @@ state_cnt %&gt;% arrange(state_cnt, desc(Number_of_States)) %&gt;%
   facet_wrap(Number_of_States ~ Full_State) +
   scale_y_discrete() +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with
-## `binwidth`.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="EDA1_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <pre class="r"><code># PLOT2 Bar Chart| How many breweries are present in each state? ####
 Top_Ten &lt;- state_cnt[order(-state_cnt$Number_of_States), ]
@@ -817,8 +819,7 @@ plt_ds %&gt;% arrange(IBU_Median, desc(Full_State)) %&gt;%
   facet_wrap(IBU_Median ~ Full_State) +
   scale_y_discrete() +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with
-## `binwidth`.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="EDA1_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 <pre class="r"><code># FIX ROUNDING ####
 plt_ds$ABV_Median &lt;- round(plt_ds$ABV_Median, digits = 3)
@@ -832,44 +833,35 @@ plt_ds %&gt;% arrange(ABV_Median, desc(Full_State)) %&gt;%
   facet_wrap(ABV_Median ~ Full_State) +
   scale_y_discrete() +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with
-## `binwidth`.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="EDA1_files/figure-html/unnamed-chunk-31-1.png" width="672" />
 Review the Summary Data of the data sets for Question #6</p>
 <pre class="r"><code># Reviewing all beers ds | The entire data set
 summary(all_beer_ds)</code></pre>
-<pre><code>##     Brew_ID       Beer_Name            Beer_ID      
-##  Min.   :  1.0   Length:2410        Min.   :   1.0  
-##  1st Qu.: 94.0   Class :character   1st Qu.: 808.2  
-##  Median :206.0   Mode  :character   Median :1453.5  
-##  Mean   :232.7                      Mean   :1431.1  
-##  3rd Qu.:367.0                      3rd Qu.:2075.8  
-##  Max.   :558.0                      Max.   :2692.0  
-##                                                     
-##       ABV               IBU        
-##  Min.   :0.00100   Min.   :  4.00  
-##  1st Qu.:0.05000   1st Qu.: 25.00  
-##  Median :0.05600   Median : 25.00  
-##  Mean   :0.05972   Mean   : 30.19  
-##  3rd Qu.:0.06700   3rd Qu.: 35.00  
-##  Max.   :0.12800   Max.   :100.00  
-##                                    
-##                             Style          Ounces     
-##  American IPA                  : 424   Min.   : 8.40  
-##  American Pale Ale (APA)       : 245   1st Qu.:12.00  
-##  American Amber / Red Ale      : 133   Median :12.00  
-##  American Blonde Ale           : 108   Mean   :13.59  
-##  American Double / Imperial IPA: 105   3rd Qu.:16.00  
-##  American Pale Wheat Ale       :  97   Max.   :32.00  
-##  (Other)                       :1298                  
-##    Brewery              City          
-##  Length:2410        Length:2410       
-##  Class :character   Class :character  
-##  Mode  :character   Mode  :character  
-##                                       
-##                                       
-##                                       
-##                                       
+<pre><code>##     Brew_ID       Beer_Name            Beer_ID            ABV         
+##  Min.   :  1.0   Length:2410        Min.   :   1.0   Min.   :0.00100  
+##  1st Qu.: 94.0   Class :character   1st Qu.: 808.2   1st Qu.:0.05000  
+##  Median :206.0   Mode  :character   Median :1453.5   Median :0.05600  
+##  Mean   :232.7                      Mean   :1431.1   Mean   :0.05972  
+##  3rd Qu.:367.0                      3rd Qu.:2075.8   3rd Qu.:0.06700  
+##  Max.   :558.0                      Max.   :2692.0   Max.   :0.12800  
+##                                                                       
+##       IBU                                    Style     
+##  Min.   :  4.00   American IPA                  : 424  
+##  1st Qu.: 25.00   American Pale Ale (APA)       : 245  
+##  Median : 25.00   American Amber / Red Ale      : 133  
+##  Mean   : 30.19   American Blonde Ale           : 108  
+##  3rd Qu.: 35.00   American Double / Imperial IPA: 105  
+##  Max.   :100.00   American Pale Wheat Ale       :  97  
+##                   (Other)                       :1298  
+##      Ounces        Brewery              City          
+##  Min.   : 8.40   Length:2410        Length:2410       
+##  1st Qu.:12.00   Class :character   Class :character  
+##  Median :12.00   Mode  :character   Mode  :character  
+##  Mean   :13.59                                        
+##  3rd Qu.:16.00                                        
+##  Max.   :32.00                                        
+##                                                       
 ##     State          
 ##  Length:2410       
 ##  Class :character  
@@ -939,8 +931,7 @@ plt_ds %&gt;% ggplot() +
   geom_smooth(aes(x = ABV_Median , y = IBU_Median), color = &quot;red&quot;) +
   scale_color_gradient2(low = &quot;black&quot;, high = &quot;red&quot;) +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y
-## ~ x&#39;</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
 <p><img src="EDA1_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
 <pre class="r"><code># All Data PLOT | relationship between IBU and ABV ####
 all_beer_ds %&gt;% ggplot() +
@@ -948,8 +939,8 @@ all_beer_ds %&gt;% ggplot() +
   geom_smooth(aes(x = ABV, y = IBU, color = IBU), color = &quot;red&quot;) +
   scale_color_gradient2(low = &quot;black&quot;, high = &quot;red&quot;)  +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~
-## s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs =
+## &quot;cs&quot;)&#39;</code></pre>
 <p><img src="EDA1_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
 <p>What is the probability of picking a beer like Budweiser lager in
 this list of craft beers.</p>
@@ -965,7 +956,7 @@ class</code></pre>
 <pre><code>## [1] Cream Ale
 ## attr(,&quot;prob&quot;)
 ## [1] 0.375
-## 100 Levels:  Abbey Single Ale ... Witbier</code></pre>
+## 100 Levels:  Abbey Single Ale Altbier ... Witbier</code></pre>
 <pre class="r"><code>#table(class, test)</code></pre>
 <p>Question #8 - difference with respect to IBU and ABV between IPAs
 (India Pale Ales) and other types of Ale (any beer with “Ale” in its
@@ -998,26 +989,26 @@ confusionMatrix(table(class4, train2$Classification))</code></pre>
 ## 
 ##       
 ## class4 Ale IPA
-##    Ale 906  74
-##    IPA  70 484
+##    Ale 907  74
+##    IPA  69 484
 ##                                           
-##                Accuracy : 0.9061          
-##                  95% CI : (0.8904, 0.9203)
+##                Accuracy : 0.9068          
+##                  95% CI : (0.8911, 0.9209)
 ##     No Information Rate : 0.6362          
 ##     P-Value [Acc &gt; NIR] : &lt;2e-16          
 ##                                           
-##                   Kappa : 0.7969          
+##                   Kappa : 0.7982          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.8026          
+##  Mcnemar&#39;s Test P-Value : 0.738           
 ##                                           
-##             Sensitivity : 0.9283          
+##             Sensitivity : 0.9293          
 ##             Specificity : 0.8674          
-##          Pos Pred Value : 0.9245          
-##          Neg Pred Value : 0.8736          
+##          Pos Pred Value : 0.9246          
+##          Neg Pred Value : 0.8752          
 ##              Prevalence : 0.6362          
-##          Detection Rate : 0.5906          
-##    Detection Prevalence : 0.6389          
-##       Balanced Accuracy : 0.8978          
+##          Detection Rate : 0.5913          
+##    Detection Prevalence : 0.6395          
+##       Balanced Accuracy : 0.8983          
 ##                                           
 ##        &#39;Positive&#39; Class : Ale             
 ## </code></pre>

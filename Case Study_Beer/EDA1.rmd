@@ -38,27 +38,27 @@ library(plotly)
 
 
 Import in all datasets
-```{r echo = FALSE}
+```{r}
 # IMPORT DATASETS ####
 # Import Beers data set
-beers <- read.csv(choose.files(),header = T)
+beers <- read.csv(file = "Beers.csv",header = T)
 ```
 
-```{r echo = FALSE}
+```{r}
 # Import Breweries data set
-breweries <- read.csv(choose.files(),header = T)
+breweries <- read.csv("Breweries.csv",header = T)
 ```
 
-```{r echo = FALSE}
+```{r}
 # Import Breweries data set
-state_abb_list <- read.csv(choose.files(),header = T)
+state_abb_list <- read.csv("State_Abbrv_List.csv",header = T)
 
 # Change column names
 colnames(state_abb_list)[1] <- c("Full_State")
 colnames(state_abb_list)[3] <- c("State")
 ```
 
-```{r echo = FALSE}
+```{r}
 # UNDERSTAND DATASETS ####
 # What kind of data am I looking at
 str(beers)
@@ -68,7 +68,7 @@ str(breweries)
 str(state_abb_list)
 ```
 
-```{r echo = FALSE}
+```{r}
 # REVIEW MISSING VALUES ####
 # beers dataset has missing values in IBU & ABV column
 view(beers)
@@ -81,7 +81,7 @@ safe_beers = beers
 
 
 Handling Missing Data Files for Question #3
-```{r echo = FALSE}
+```{r}
 ## Look at only NA Values in beers data set ####
 beers_na = beers
 
@@ -93,12 +93,12 @@ beers_na <- beers_na[na_rows, ]
 str(beers_na)
 ```
 
-```{r echo = FALSE}
+```{r}
 #### Check and make sure I only see na in ABV(3) and IBU(4) columns ####
 #which(is.na(beers_na), arr.ind = TRUE)
 ```
 
-```{r echo = FALSE}
+```{r}
 #### Count how many objects are NA in the ABV column ####
 ABV_na_Index <- which(is.na(beers_na$ABV), arr.ind = TRUE)
 # 62 rows
@@ -108,7 +108,7 @@ ABV_CNT <- length(ABV_na_Index)
 ABV_CNT
 ```
 
-```{r echo = FALSE}
+```{r}
 #### Count how many objects are NA in the IBU column ####
 IBU_na_Index <- which(is.na(beers_na$IBU), arr.ind = TRUE)
 # 1005 rows
@@ -118,7 +118,7 @@ IBU_Cnt <- length(IBU_na_Index)
 IBU_Cnt
 ```
 Investigation Code Chunk
-```{r echo = FALSE}
+```{r}
 #### Understand which rows are missing both ABV and IBU ####
 #str(which(is.na(beers_na$IBU) & is.na(beers_na$ABV), arr.ind = TRUE))
 
@@ -135,7 +135,7 @@ Investigation Code Chunk
 
 
 Plot to show the missing values in correlation to the size of beer, and we see that the smaller beers have more missing values
-```{r echo = FALSE}
+```{r}
 # MIssing Data PLot 2 ####
 beers_na %>%
   ggplot() +
@@ -146,14 +146,14 @@ beers_na %>%
 ```
 
 
-```{r echo = FALSE}
+```{r}
 # EXPORT NA FIELDS TO CSV ####
 write.csv(beers_na, "Missing_Data.csv", row.names = T)
 ```
 
 
 Merge Datasets together for Question #2
-```{r echo = FALSE}
+```{r}
 # MERGE SAFE_BEERS AND ALL BEER DATA ####
 # Rename Column Names for Consistency and Merge Process
 colnames(beers)[5] <- c("Brew_ID")
@@ -180,7 +180,7 @@ Handle Missing Values for Question #3
 
 
 Replace ABV and IBU missing values with Styled median values. This way when we go to grab the median or results wont be so skewed. Especially since we have close to half of the data set missing values.
-```{r echo = FALSE}
+```{r}
 # HANDLING MISSING VALUES WITH CUMPUTED VALUES ####
 all_beer_ds$Style = as.factor(all_beer_ds$Style)
 
@@ -193,7 +193,7 @@ style_ABV_cnt <- aggregate(ABV ~ Style, all_beer_ds, median)
 style_IBU_cnt <- aggregate(IBU ~ Style, all_beer_ds, median)
 ```
 
-```{r echo = FALSE}
+```{r}
 # Style with no IBU at all like Rauchier and replace with median first then run the loop 
 missing_IBU <- setdiff(levels(all_beer_ds$Style), levels(as.factor(as.character(style_IBU_cnt$Style))))
 
@@ -288,7 +288,7 @@ for (d in 1:length(Double_index)) {
 
 ```
 
-```{r echo = FALSE}
+```{r}
 # Catch the leftovers IBU Values
 for (g in 1:length(missing_index_IBU)) {
       
@@ -298,7 +298,7 @@ for (g in 1:length(missing_index_IBU)) {
 }
 ```
 
-```{r echo = FALSE}
+```{r}
 ## ABV LOOP MEDIAN ####
 for (i in 1:length(index_safe_beers_ABV)) {
   all_beer_ds[index_safe_beers_ABV[i], "ABV"] = style_ABV_cnt[style_ABV_cnt$Style == all_beer_ds[index_safe_beers_ABV[i], "Style"], "ABV"]
@@ -307,7 +307,7 @@ for (i in 1:length(index_safe_beers_ABV)) {
 
 
 
-```{r echo = FALSE}
+```{r}
 ## Beers_ds CHECKPOINT ####
 beers_ds <- all_beer_ds
 
@@ -317,7 +317,7 @@ str(beers_ds)
 
 
 Compute the median alcohol content and international bitterness unit for each state. Question #4
-```{r echo = FALSE}
+```{r}
 # DATAFRAME FOR MEDIAN AND MEAN VALUES ####
 # WILL BE USED FOR PLOTTING
 plot_ds <- as.data.frame(matrix(nrow = 50, ncol = 0))
@@ -325,7 +325,7 @@ plot_ds <- as.data.frame(matrix(nrow = 50, ncol = 0))
 plot_ds
 ```
 
-```{r echo = FALSE}
+```{r}
 # Compute the median alcohol content and international bitterness unit for each state. ####
 ## IBU Median by State ####
 plot_ds <- beers_ds %>% group_by(State) %>%
@@ -338,7 +338,7 @@ colnames(plot_ds)[2] <- c("IBU_Median")
 plot_ds
 ```
 
-```{r echo = FALSE}
+```{r}
 ## ABV median by State ####
 ABV_Median <- beers_ds %>% group_by(State) %>%
   summarise(median = median(ABV))
@@ -356,7 +356,7 @@ plot_ds
 ```
 
 
-```{r echo = FALSE}
+```{r}
 # MERGE MEDIAN DATASET WITH STATE ABBREVIATIONS ####
 plt_ds = plot_ds
 
@@ -377,7 +377,7 @@ str(plt_ds)
 ```
 
 
-```{r echo = FALSE}
+```{r}
 # MERGE AND CREATE FULL DATASET FOR CHARTS ####
 ## ALL BEERS DS BACKUP CHECK POINT ####
 backup_ds = all_beer_ds
@@ -398,7 +398,7 @@ str(backup_ds)
 
 
 Compute the Number of Breweries by State Question #1
-```{r echo = FALSE}
+```{r}
 # How many breweries are present in each state? | State_cnt ####
 state_cnt <- all_beer_ds %>% count(State, sort = T)
 
@@ -417,7 +417,7 @@ str(state_cnt)
 ```
 
 
-```{r echo = FALSE}
+```{r}
 # PLOT1 Facet Wrap| How many breweries are present in each state? ####
 state_cnt %>% arrange(state_cnt, desc(Number_of_States)) %>%
   ggplot(aes(x = Number_of_States, fill = Full_State)) +
@@ -430,7 +430,7 @@ state_cnt %>% arrange(state_cnt, desc(Number_of_States)) %>%
   
 ```
 
-```{r echo = FALSE}
+```{r}
 # PLOT2 Bar Chart| How many breweries are present in each state? ####
 Top_Ten <- state_cnt[order(-state_cnt$Number_of_States), ]
   
@@ -453,7 +453,7 @@ head(Top_Ten, 10) %>%
 Median Charts for Question #4
 
 Bar Charts to compare the Median value of ABV vs IBU by state
-```{r echo = FALSE}
+```{r}
 Top_5_IBU <- plt_ds[order(-plt_ds$IBU_Median), ]
 Top_5_ABV <- plt_ds[order(-plt_ds$ABV_Median), ]
   
@@ -486,7 +486,7 @@ cowplot::plot_grid(p3, p4, ncol = 2)
 
 
 Bar Charts to compare the TOP 5 State and their Median value of ABV vs IBU
-```{r echo = FALSE}
+```{r}
 # IBU CHART
 p1 <- plt_ds %>% ggplot(aes(reorder(IBU_Median, x = State), x = IBU_Median, fill = IBU_Median)) +
   geom_bar(stat = "identity") +
@@ -513,7 +513,7 @@ cowplot::plot_grid(p1, p2, ncol = 2)
 
 
 Breakdown of of Median values by State
-```{r echo = FALSE}
+```{r}
 # PLOT IBU Median by States ####
 plt_ds %>% arrange(IBU_Median, desc(Full_State)) %>%
   ggplot(aes(x = IBU_Median, fill = Full_State)) +
@@ -528,7 +528,7 @@ plt_ds %>% arrange(IBU_Median, desc(Full_State)) %>%
 
 
 
-```{r echo = FALSE}
+```{r}
 # FIX ROUNDING ####
 plt_ds$ABV_Median <- round(plt_ds$ABV_Median, digits = 3)
 
@@ -544,13 +544,13 @@ plt_ds %>% arrange(ABV_Median, desc(Full_State)) %>%
 
 ```
 Review the Summary Data of the data sets for Question #6
-```{r echo = FALSE}
+```{r}
 # Reviewing all beers ds | The entire data set
 summary(all_beer_ds)
 
 ```
 
-```{r echo = FALSE}
+```{r}
 # Reviewing plt ds | Median Values of the data set
 summary(plt_ds)
 
@@ -559,21 +559,21 @@ summary(plt_ds)
 
 
 Which state has the maximum alcoholic (ABV) beer? Question #5
-```{r echo = FALSE}
+```{r}
 # Max ABV State
 Max_ABV <- head(Top_5_ABV, 1)
 Max_ABV
 ```
 
 
-```{r echo = FALSE}
+```{r}
 # MAX IBU State
 Max_IBU <- head(Top_5_IBU, 1)
 Max_IBU
 ```
 
 
-```{r echo = FALSE}
+```{r}
 median_map <- plt_ds
 
 colnames(median_map)[1] <- c("state")
@@ -588,20 +588,20 @@ plot_usmap(data = median_map, values = "ABV_Median") +
 
 ```
   
-```{r echo = FALSE}
+```{r}
 # Kentucky Map ABV MAX STATE
 plot_usmap(data = median_map, values = "ABV_Median", include = c("KY"),  labels = TRUE, label_color = "white", show.legend = FALSE) +
   labs(title = paste(Max_ABV$Full_State, " Max ABV ", Max_ABV$ABV_Median)) +
   scale_fill_gradient(low = "dark grey", high = "red")
 ```
 
-```{r echo = FALSE}
+```{r}
 plot_usmap(data = median_map, values = "IBU_Median") +
   labs(title = "Median Heatmap by State") +
   scale_fill_gradient(low = "dark grey", high = "red") 
 ```
 
-```{r echo = FALSE}
+```{r}
 # Kentucky Map ABV MAX STATE
 plot_usmap(data = median_map, values = "ABV_Median", include = c("NJ"),  labels = TRUE, label_color = "white", show.legend = FALSE) +
   labs(title = paste(Max_IBU$Full_State, " Max IBU ", Max_IBU$IBU_Median)) +
@@ -609,7 +609,7 @@ plot_usmap(data = median_map, values = "ABV_Median", include = c("NJ"),  labels 
 ```
 
 Question #7: Is there an apparent relationship between the bitterness of the beer and its alcoholic content? 
-```{r echo = FALSE}
+```{r}
 # MEDIAN PLOT | relationship between IBU and ABV ####
 plt_ds %>% ggplot() +
   geom_point(aes(x = ABV_Median , y = IBU_Median, color = ABV_Median, alpha = IBU_Median)) +
@@ -619,7 +619,7 @@ plt_ds %>% ggplot() +
   
 ```
 
-```{r echo = FALSE}
+```{r}
 # All Data PLOT | relationship between IBU and ABV ####
 all_beer_ds %>% ggplot() +
   geom_point(aes(x = ABV, y = IBU, color = ABV), position = "jitter") +
@@ -630,7 +630,7 @@ all_beer_ds %>% ggplot() +
 ```
 
 What is the probability of picking a beer like Budweiser lager in this list of craft beers.
-```{r echo = FALSE}
+```{r}
 # KNN Classification | FOR PRESENTATION ####
 train = all_beer_ds
 
@@ -646,7 +646,7 @@ class
 
 
 Question #8 - difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA). 
-```{r echo = FALSE}
+```{r}
 # Create KNN Train and Test Datasets ####
 
 train2 = train[grepl("Ale|IPA", train$Style), ] # Everything Ale and IPA
@@ -669,7 +669,7 @@ test2 = train2[grepl("\\bIPA\\b", train2$Style), ] # ONLY IPA
 
 
 What is the probability that we will find similar style beers within the entire dataset based off the ABV and IBU
-```{r echo = FALSE}
+```{r}
 class4 <- knn.cv(train2[, c(4:5)], train2$Classification, k = 5, prob = T)
 
 # table(class5, train2$Style)
