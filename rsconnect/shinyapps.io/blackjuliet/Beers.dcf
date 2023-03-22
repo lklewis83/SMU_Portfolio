@@ -1,0 +1,13 @@
+name: Beers
+title: Beers
+username:
+account: blackjuliet
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8643840
+bundleId: 6993595
+url: https://blackjuliet.shinyapps.io/Beers/
+when: 1679507178.46563
+lastSyncTime: 1679507178.46564
+asMultiple: FALSE
+asStatic: FALSE

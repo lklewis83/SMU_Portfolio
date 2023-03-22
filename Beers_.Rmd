@@ -1,0 +1,401 @@
+---
+title: "Beer Data"
+author: "Lani Lewis"
+date: "`r Sys.Date()`"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include = FALSE}
+# install.packages('rsconnect')
+# install.packages("shiny")
+# install.packages("askpass")
+# install.packages("caret")
+# install.packages("lubridate")
+# install.packages("tidyverse")
+# install.packages("ggplot")
+
+# LIBRARIES ####
+library(maps) # lat and long
+library(usmap)
+library(caret) # confusion Matrix
+library(e1071) # navebayes
+library(class) # knn
+#library(tm) #text mining library provides the stopwords() function
+library(tidyr)
+#library(plyr)
+#library(jsonlite)
+library(dplyr)
+library(tidyverse)
+library(stringr) # string manipulation
+#library(mvtnorm)
+library(ggthemes) # Plot Themes
+library(plotly)
+library(shiny)
+library(rsconnect)
+library(askpass)
+library(ggplot2)
+#library(ggplot)
+```
+
+```{r include = FALSE}
+# Import Dataset
+# getwd()
+beers <- read.csv(file = "Beers.csv",header = T)
+breweries <- read.csv("Breweries.csv",header = T)
+state_abb_list <- read.csv("State_Abbrv_List.csv",header = T)
+
+# Remove space before state abbreviation
+breweries$State <- gsub("\\s", "", breweries$State)
+
+# Change column names
+colnames(state_abb_list)[1] <- c("Full_State")
+colnames(state_abb_list)[3] <- c("State")
+
+# Rename Column Names for Consistency and Merge Process
+colnames(beers)[5] <- c("Brew_ID")
+colnames(beers)[1] <- c("Beer_Name")
+
+# Merge Datasets ####
+# Beer Dataset
+beer_ds <- merge(beers,breweries, by = "Brew_ID")
+
+# Add Full State Name
+plt_ds <- merge(beer_ds, state_abb_list, by = "State", all.x = T ) 
+```
+
+
+```{r include = FALSE}
+# Handle Missing Values
+#plt_ds = drop_na(plt_ds)
+
+plt_ds$Style = as.factor(plt_ds$Style)
+
+# Grab the index of each NA row by ABV and IBU ####
+index_safe_beers_ABV = which(is.na(plt_ds$ABV))
+
+## FInd Median based on Style ####
+style_ABV_cnt <- aggregate(ABV ~ Style, plt_ds, median)
+style_IBU_cnt <- aggregate(IBU ~ Style, plt_ds, median)
+
+# Missing IBU
+missing_IBU <- setdiff(levels(plt_ds$Style), levels(as.factor(as.character(style_IBU_cnt$Style))))
+
+
+## Median IBU for all beers ####
+no_style_IBU_cnt <- median(style_IBU_cnt$IBU)
+
+
+# Capture beer index for Loop
+Ale_index <- which(grepl("Blonde Ale", plt_ds$Style))
+Red_index <- which(grepl("Red Ale", plt_ds$Style))
+APA_index <- which(grepl("American Pale Ale", plt_ds$Style))
+Wheat_index <- which(grepl("Wheat Ale", plt_ds$Style))
+lager_index <- which(grepl("Lager", plt_ds$Style))
+Stout_index <- which(grepl("Stout", plt_ds$Style))
+Mead_index <- which(grepl("Mead", plt_ds$Style))
+Cider_index <- which(grepl("Cider", plt_ds$Style))
+IPA_index <- which(grepl("American IPA", plt_ds$Style))
+Double_index <- which(grepl("American Double", plt_ds$Style))
+missing_index_IBU <- which(is.na(plt_ds$IBU))
+
+
+
+# American Blonde Ale 
+for (a in 1:length(Ale_index)) {
+  
+  plt_ds[Ale_index[a], "IBU"] = 15
+}  
+
+
+# American Amber / Red Ale
+for (r in 1:length(Red_index)) {
+  
+  plt_ds[Red_index[r], "IBU"] = 17
+}  
+
+
+# American Pale Ale (APA)
+for (p in 1:length(APA_index)) {
+  
+  plt_ds[APA_index[p], "IBU"] = 35
+}  
+
+
+# American Pale Wheat Ale
+for (w in 1:length(Wheat_index)) {
+  
+  plt_ds[Wheat_index[w], "IBU"] = 10
+}  
+
+
+# lager Replacement
+for (l in 1:length(lager_index)) {
+  
+  plt_ds[lager_index[l], "IBU"] = 8
+}  
+
+
+# Stout Replacement
+for (s in 1:length(Stout_index)) {
+  
+  plt_ds[Stout_index[s], "IBU"] = 25
+} 
+
+
+# Mead Replacement
+for (m in 1:length(Mead_index)) {
+  
+  plt_ds[Mead_index[m], "IBU"] = 0
+} 
+
+
+# Cider Replacement
+for (c in 1:length(Cider_index)) {
+  
+  plt_ds[Cider_index[c], "IBU"] = 5
+} 
+
+
+# IPA Replacement
+for (p in 1:length(IPA_index)) {
+  
+  plt_ds[IPA_index[p], "IBU"] = 55
+} 
+
+
+# Double Replacement
+for (d in 1:length(Double_index)) {
+  
+  plt_ds[Double_index[d], "IBU"] = 65
+} 
+
+# --------------------------------------------
+# Catch the leftovers IBU Values
+for (g in 1:length(missing_index_IBU)) {
+      
+  # General Replacement
+  plt_ds[missing_index_IBU[g], "IBU"] = no_style_IBU_cnt
+ 
+}
+
+#----------------------------------------------
+## ABV LOOP MEDIAN ####
+for (i in 1:length(index_safe_beers_ABV)) {
+  plt_ds[index_safe_beers_ABV[i], "ABV"] = style_ABV_cnt[style_ABV_cnt$Style == plt_ds[index_safe_beers_ABV[i], "Style"], "ABV"]
+}
+```
+
+```{r echo = FALSE}
+# How many breweries are present in each state? | State_cnt ####
+state_cnt <- plt_ds %>% count(State, sort = T)
+
+colnames(state_cnt)[2] <- "Number_of_States"
+
+plt_ds <- merge(plt_ds, state_cnt, by = "State", all.x = T )
+```
+
+```{r echo = FALSE}
+# Compute the median alcohol content and international bitterness unit for each state. ####
+## IBU Median by State ####
+IBU_Median <- plt_ds %>% group_by(Full_State) %>%
+  summarise(median = median(IBU))
+
+colnames(IBU_Median)[2] <- c("IBU_Median")
+
+
+
+ABV_Median <- plt_ds %>% group_by(Full_State) %>%
+  summarise(median = median(ABV))
+
+colnames(ABV_Median)[2] <- c("ABV_Median")
+
+
+
+plot_ds <- merge(IBU_Median, ABV_Median, by = "Full_State")
+
+plt_ds <- merge(plt_ds, plot_ds, by = "Full_State", all.x = T )
+```
+
+```{r echo = FALSE}
+ui <- fluidPage(
+  
+  # App title ----
+  titlePanel("Beer Strength App"),
+  
+  # Sidebar layout with input and output definitions ----
+  sidebarLayout(
+    
+    # Sidebar panel for inputs ----
+    sidebarPanel(
+      
+      #Input: Slider for the number of bins ----
+      sliderInput(inputId = "bins",
+                  label = "Number Bars per Chart:",
+                  min = 1,
+                  max = 55,
+                  value = 50),
+      
+      # Copy the line below to make a select box ####
+      # ALL VALUES MUST BE UNIQUE as A VECTOR IS CREATED OFF the EQUAL VALUES
+       selectInput("liquor",
+                   label = h1("Chart Selection"), 
+                    choices = c("IBU_Histogram" ="IBU_Histogram",
+                                   "ABV_Histogram" ="ABV_Histogram",                                                              "IBU_ScatterPlot" = "IBU_ScatterPlot", 
+                                   "ABV_ScatterPlot" = "ABV_ScatterPlot",
+                                "State_BoxPlot" = "State_BoxPlot"),
+                    ),
+       
+      # Second selection to select a state
+       radioButtons("option",
+                   "Show Regression Line",
+                   choices = c("Yes" = "True",
+                               "No" = "False")),
+      selectInput("state", 
+                  "Select a State", 
+                  state.name,
+                  multiple = T,
+                  selected = "Connecticut"),  
+      selectInput("metric", 
+                  "Select a Metric | Boxplot Option ONLY", 
+                  choices = c("IBU" = "IBU",
+                              "ABV" = "ABV"),
+                  selected = "IBU"),
+     
+   
+                    hr(),
+      
+                    fluidRow(column(3, verbatimTextOutput("value"))),      
+                   
+    ),
+    
+    # Main panel for displaying outputs ----
+    mainPanel(
+      
+      # Output: Histogram ----
+      plotOutput(outputId = "distPlot")
+      
+    )
+  )
+)
+```
+
+```{r echo = FALSE}
+# Define server logic required to draw a histogram ----
+server <- function(input, output) {
+  
+  # Histogram of the Old Faithful Geyser Data ----
+  # with requested number of bins
+  # This expression that generates a histogram is wrapped in a call
+  # to renderPlot to indicate that:
+  #
+  # 1. It is "reactive" and therefore should be automatically
+  #    re-executed when inputs (input$bins) change
+  # 2. Its output type is a plot
+  output$distPlot <- renderPlot({
+    
+    if(input$liquor == "IBU_Histogram")
+    {
+    plt_ds <- filter(plt_ds, plt_ds$Full_State == input$state)  
+    
+    x    <- plt_ds$IBU 
+    
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+
+    hist(x, breaks = bins, col = "blue", border = "white",
+         xlab = "IBU Values",
+         ylab = "count",
+         main = paste("Histogram of IBU Values"))
+      if (input$option == "True") 
+      {
+        abline(lm(ABV ~ IBU, plt_ds))
+      }
+      else
+        print("Selected No")
+    
+    }
+    if(input$liquor == "ABV_Histogram")
+    {
+    plt_ds <- filter(plt_ds, plt_ds$Full_State == input$state)
+     
+    x    <- plt_ds$ABV 
+    
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    
+    hist(x, breaks = bins, col = "purple", border = "white",
+         xlab = "ABV Values",
+         ylab = "count",
+         main = paste("Histogram of ABV Values"))
+      if (input$option == "True") 
+      {
+        abline(lm(ABV ~ IBU, plt_ds))
+      }
+      else
+        print("Selected No")
+    }
+    if(input$liquor == "IBU_ScatterPlot")
+    {
+    plt_ds <- filter(plt_ds, plt_ds$Full_State == input$state)
+     
+    x    <- plt_ds$IBU  
+    
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    
+    plot(x, breaks = bins, col = "maroon", border = "white",
+         xlab = "IBU Values",
+         ylab = "count",
+         main = paste("Scatterplot of IBU Values"))
+      if (input$option == "True") 
+      {
+        abline(lm(ABV ~ IBU, plt_ds))
+      }
+      else
+        print("Selected No")
+    }
+    if(input$liquor == "ABV_ScatterPlot")
+    {
+    plt_ds <- filter(plt_ds, plt_ds$Full_State == input$state)
+    
+    x    <- plt_ds$ABV 
+    
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    
+    plot(x, breaks = bins, col = "plum", border = "white",
+         xlab = "ABV Values",
+         ylab = "count",
+         main = paste("Scatterplot of ABV Values"))
+      if (input$option == "True") 
+      {
+        abline(lm(ABV ~ IBU, plt_ds))
+      }
+      else
+        print("Selected No")
+    }
+    if(input$liquor == "State_BoxPlot")
+    {
+    plt_ds <- filter(plt_ds, plt_ds$Full_State == input$state)
+    
+      if (input$metric == "IBU") {
+        plt_ds %>% ggplot(aes(x = IBU, 
+                              y = Full_State, 
+                              color = Full_State)) + 
+          geom_boxplot()
+      } 
+      else
+      plt_ds %>% ggplot(aes(x = ABV, 
+                            y = Full_State, 
+                            color = Full_State)) + 
+      geom_boxplot()
+      }
+    
+  })
+  
+}
+
+shinyApp(ui, server)
+
+```
