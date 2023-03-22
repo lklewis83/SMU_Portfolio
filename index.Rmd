@@ -1,0 +1,21 @@
+---
+title: "SMU Portfolio"
+author: "Lani Lewis"
+date: "`r Sys.Date()`"
+output: html_document
+---
+# Welcome!
+
+Is currently a grad student at Southern
+Methodist University (SMU). This site will encompass her Data Science work while attending SMU.
+
+She is also employed as an eCommerce Client Support Analyst
+for Pitney Bowes. She has over 15 years of domain knowledge in the shipping and eCommerce industry.
+
+Besides her drive to become a data scientist, she is also a mother of two girls and an
+artist.
+
+```{r echo=FALSE}
+knitr::include_graphics("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 12/lklewis83.github.io/at_Work.PNG")
+```
+
