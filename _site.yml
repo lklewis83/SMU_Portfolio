@@ -11,5 +11,7 @@ navbar:
       menu:
           - text: "Budweiser Beer Case Study"
             href: EDA1.html
+          - text: "Shiny Beer App"
+            href: https://blackjuliet.shinyapps.io/Beers/
           - text: "Barbie Bungee Activity"
             href: Bungee.html

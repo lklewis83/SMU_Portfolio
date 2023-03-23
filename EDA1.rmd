@@ -10,6 +10,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+Here is my Zoom Presentation: https://smu-2u-com.zoom.us/rec/share/13htVJKVYg_fleqFMOzG7q1yBBF2q4hG9XXHi28xw86szepkh5uJry0yspJW6hZb.0aoM7CStP0CVqCVb
+--------
+This was my first group assignment which was a Budweiser EDA.
+
+
+
 This area is used to setup R studio for this project
 ```{r include=FALSE}
 #install.packages("caret")
