@@ -9,7 +9,7 @@ navbar:
     - text: "Case Studies"
       icon: fa-file
       menu:
-          - text: "Case Study 1"
+          - text: "Budweiser Beer Case Study"
             href: EDA1.html
           - text: "Barbie Bungee Activity"
             href: Bungee.html
