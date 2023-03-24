@@ -15,3 +15,8 @@ navbar:
             href: https://blackjuliet.shinyapps.io/Beers/
           - text: "Barbie Bungee Activity"
             href: Bungee.html
+    - text: "Presentations"
+      icon: fa-file
+      menu:
+          - text: "Budweiser Beer"
+            href: https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4
