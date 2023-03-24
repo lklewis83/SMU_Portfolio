@@ -1,4 +1,5 @@
 name: "Lani Lewis"
+always_allow_html: true
 navbar:
   title: "SMU Data Science Protfolio"
   type: "inverse"
@@ -20,3 +21,6 @@ navbar:
       menu:
           - text: "Budweiser Beer"
             href: https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4
+output:
+  html_document:
+    theme: yeti
