@@ -12,15 +12,24 @@ navbar:
       menu:
           - text: "Budweiser Beer Case Study"
             href: EDA1.html
-          - text: "Shiny Beer App"
+          - text: "Shiny App | Budweiser Beer"
             href: https://blackjuliet.shinyapps.io/Beers/
           - text: "Barbie Bungee Activity"
             href: Bungee.html
+          - text: "Frito Lay Employee Attrition Activity"
+            href: Employee-Attrition.html
+          - text: "Frito Lay Emp Attr Predictions"
+            href: EmployeeAttritionPredictions.html
+          - text: "Shiny App | Employee Attrition"
+            href: https://blackjuliet.shinyapps.io/Employee_Attrition/
     - text: "Presentations"
       icon: fa-file
       menu:
-          - text: "Budweiser Beer"
+          - text: "Budweiser Beer Presentation"
             href: https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4
+          - text: "Frito Lay Employee Att. Pres."
+            href: https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4
+
 output:
   html_document:
     theme: yeti

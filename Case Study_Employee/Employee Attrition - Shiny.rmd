@@ -1,0 +1,341 @@
+---
+title: "Employee Attrition Review"
+author: "Lani Lewis"
+date: "2023-03-30"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include = FALSE}
+# LIBRARIES ####
+library(ggplot2)
+library(tidyverse)
+library(plotly)
+library(shiny)
+#library(RCurl)
+#library(aws.s3)
+#library(gridExtra)
+library(class)
+library(caret)
+library(e1071)
+#library(kknn)
+```
+
+```{r include = FALSE}
+# Import Dataset
+# getwd()
+#attrition <- read.csv(file = "CaseStudy2-data.csv",header = T)
+attrition <- read.csv("CaseStudy2-data.csv", header = T)
+
+income <- read.csv("CaseStudy2CompSetNoIncome1.csv", header = T)
+
+no_att <- read.csv("CaseStudy2CompSetNoAttrition.csv", header = T)
+
+
+# REPLACE attrition with new values ####
+attrition$Attrition <- gsub("No", "Stayed", attrition$Attrition)
+attrition$Attrition <- gsub("Yes", "Left", attrition$Attrition)
+#attrition$Attrition
+
+# FORCE COLORS FOR Attrition ####
+colors <- c("Stayed" = "green", "Left" = "red")
+```
+
+
+```{r include = FALSE}
+# Configure KNN ####
+train <- attrition 
+
+set.seed(123)
+
+## Change to FActors ####
+train$Attrition = as.factor(train$Attrition)
+train$Gender = as.factor(train$Gender)
+train$BusinessTravel = as.factor(train$BusinessTravel)
+train$Department = as.factor(train$Department)
+train$MaritalStatus = as.factor(train$MaritalStatus)
+
+## Split Data 70-30 | KNN ####
+index <- createDataPartition(train$Attrition, p = 0.7, list = F)
+train_knn <- attrition[index, ]
+test_knn <- attrition[-index, ]
+
+
+```
+
+```{r echo = FALSE}
+# GUI SETUP ####
+ui <- fluidPage(
+
+  # App title ----
+  titlePanel("Attrition: Describes if an employee has left a company."),
+    
+    # Tabset panel with two tabs ----
+    tabsetPanel(
+    tabPanel("Plot", 
+             
+        # Sidebar layout with input and output definitions ----
+        sidebarLayout(
+          
+          # Sidebar panel for inputs ----
+          # Main Panel
+          sidebarPanel(
+          # Input: Slider for the number of bins ----
+            # Column
+                  selectInput("xaxis", 
+                        "Select x Axis Value", 
+                        choices = c("Department" = "Department",
+                                    "Gender" = "Gender",
+                                    "DistanceFromHome" = "DistanceFromHome",
+                                    "HourlyRate" = "HourlyRate",
+                                    "MonthlyIncome" = "MonthlyIncome",
+                                    "JobLevel" = "JobLevel",
+                                    "YearsAtCompany" = "YearsAtCompany",
+                                    "YearsSinceLastPromotion" = "YearsSinceLastPromotion",
+                                    "StandardHours" = "StandardHours",
+                                    "JobRole" = "JobRole"),
+                        selected = "Department"),
+                   selectInput("yaxis", 
+                        "Select y Axis Value", 
+                        choices = c("JobRole" = "JobRole",
+                                    "EnvironmentSatisfaction" = "EnvironmentSatisfaction",
+                                    "YearsAtCompany" = "YearsAtCompany",
+                                    "PercentSalaryHike" = "PercentSalaryHike",
+                                    "Education" = "Education",
+                                    "JobInvolvement" = "JobInvolvement",
+                                    "JobSatisfaction" = "JobSatisfaction",
+                                    "PerformanceRating" = "PerformanceRating",
+                                    "OverTime" = "OverTime",
+                                    "Department" = "Department"),
+                        selected = "JobRole"),
+            
+          ),
+          
+       # Main panel for displaying outputs ----
+          mainPanel(
+            
+            # Output dataframe is distPlot
+            plotOutput(outputId = "distPlot")
+        ) 
+       ) # sidebar layout
+    ), # end of Plot tabPanel
+    
+  tabPanel("KNN Review", 
+             
+        # Sidebar layout with input and output definitions ----
+        sidebarLayout(
+          
+          # Sidebar panel for inputs ----
+          # Main Panel
+          sidebarPanel(
+          
+                  #Input: Slider for the number of bins ----
+                  sliderInput(inputId = "bestk",
+                  label = "Select Best K Option",
+                  min = 1,
+                  max = 20,
+                  value = 5),
+            
+                  selectInput("pred1", 
+                        "Select KNN Predictor 1", 
+                        choices = c("Age" = "Age",
+                                    "DistanceFromHome" = "DistanceFromHome",
+                                    "Education" = "Education",
+                                    "EmployeeCount" = "EmployeeCount",
+                                    "EnvironmentSatisfaction" = "EnvironmentSatisfaction",
+                                    "JobInvolvement" = "JobInvolvement",
+                                    "JobLevel" = "JobLevel"),
+                        selected = "Age"),
+          
+                   selectInput("pred2", 
+                        "Select KNN Predictor 2", 
+                        choices = c("MonthlyIncome" = "MonthlyIncome",
+                                    "DailyRate" = "DailyRate",
+                                    "MonthlyRate" = "MonthlyRate",
+                                    "EmployeeNumber" = "EmployeeNumber",
+                                    "YearsAtCompany" = "YearsAtCompany",
+                                    "HourlyRate" = "HourlyRate",
+                                    "JobSatisfaction" = "JobSatisfaction"),
+                        selected = "MonthlyIncome"),
+
+                   selectInput("class", 
+                        "Select KNN Classifier", 
+                        choices = c("Attrition" = "Attrition",
+                                    "Gender" = "Gender",
+                                    "BusinessTravel" = "BusinessTravel",
+                                    "Department" = "Department",
+                                    "MaritalStatus" = "MaritalStatus"),
+                        selected = "Attrition"),
+            
+          ),
+          
+       # Main panel for displaying outputs ----
+          mainPanel(
+            
+            # Output dataframe is distPlot
+            plotOutput(outputId = "knnreview")
+        ) 
+       ) # sidebar layout 
+    ), # end of KNN Review tabPanel
+  
+  tabPanel("Naive Bayes Review", 
+    # add summary information here
+      p("This is the NB summary information.")
+      
+    ) # end of NB Review tabPanel
+    
+  ) # end of tabsetPanel       
+             
+) # fluidpage
+```
+
+
+
+```{r  echo = FALSE}
+# OUTPUT SETUP ####
+server <- function(input, output) {
+
+  output$distPlot <- renderPlot({
+    # SELECT XAXIS VALUES FIRST #####
+    
+    attrition %>% ggplot(aes(y = y, x = x, color = Attrition)) +
+        geom_point(position = "jitter") +
+        xlab(input$xaxis) +
+        ylab(input$yaxis) +
+        ggtitle(paste("This Report Compares ", input$xaxis, " and ", input$yaxis))
+    
+    if(input$xaxis == "Department"){
+          x    <- attrition$Department
+          
+    }
+ 
+    if(input$xaxis == "Gender"){
+           x    <- attrition$Gender
+       
+    }    
+    
+    if(input$xaxis == "DistanceFromHome"){
+          x    <- attrition$DistanceFromHome
+        
+    }    
+    
+    if(input$xaxis == "HourlyRate"){
+          x    <- attrition$HourlyRate
+          
+    }    
+    
+    if(input$xaxis == "MonthlyIncome"){
+          x    <- attrition$MonthlyIncome
+          
+    }
+    
+    if(input$xaxis == "JobLevel"){
+          x    <- attrition$JobLevel
+          
+    }    
+    
+    if(input$xaxis == "YearsAtCompany"){
+          x    <- attrition$YearsAtCompany
+          
+    }
+    
+    if(input$xaxis == "YearsSinceLastPromotion"){
+          x    <- attrition$YearsSinceLastPromotion
+          
+    }
+    
+    if(input$xaxis == "StandardHours"){
+          x    <- attrition$StandardHours
+         
+    }    
+    if(input$xaxis == "JobRole"){
+          x    <- attrition$JobRole
+   
+    }
+    
+    # SECOND SETUP YAXIS ####
+          if(input$yaxis == "JobRole") {
+             y    <- attrition$JobRole
+          }
+          if(input$yaxis == "EnvironmentSatisfaction") {
+             y    <- attrition$EnvironmentSatisfaction
+          }
+          if(input$yaxis == "YearsAtCompany") {
+             y    <- attrition$YearsAtCompany
+          }
+          if(input$yaxis == "PercentSalaryHike") {
+             y    <- attrition$PercentSalaryHike
+          }
+          if(input$yaxis == "Education") {
+             y    <- attrition$Education
+          }
+          if(input$yaxis == "JobInvolvement") {
+             y    <- attrition$JobInvolvement
+          }
+          if(input$yaxis == "JobSatisfaction") {
+             y    <- attrition$JobSatisfaction
+          }
+          if(input$yaxis == "PerformanceRating") {
+             y    <- attrition$PerformanceRating
+          }
+          if(input$yaxis == "OverTime") {
+             y    <- attrition$OverTime
+          } 
+          if(input$yaxis == "Department") {
+             y    <- attrition$Department
+          }
+          
+        attrition %>% ggplot(aes(y = y, x = x, color = Attrition)) +
+        geom_point(position = "jitter") +
+        xlab(input$xaxis) +
+        ylab(input$yaxis) +
+        scale_color_manual(values = colors) + 
+        ggtitle(paste("This Report Compares ", input$xaxis, " and ", input$yaxis))
+        
+  }) # displot
+  
+
+
+  output$knnreview <- renderPlot({
+
+    # Configure Best K Option ####
+    #bestk <- seq(min(x), max(x), length.out = input$bestk + 1)
+    #bestk <- input$bestk
+    
+    # Configure KNN Predictor 1 ####
+    #pred1 <- input$pred1
+    #p(pred1)
+    
+    
+    # Configure KNN Predictor 2 ####
+    #pred2 <- input$pred2
+    #p(pred2)
+    
+    # Subset the training and test data using UI inputs
+    #train_sub <- train_knn[, c(pred1, pred2)]
+    #p(train_sub)
+    
+    #test_sub <- test_knn[, c(pred1,confusionMatrix(test_knn$Attrition, model)
+    
+      train_knn$Attrition = as.factor(train_knn$Attrition)
+      test_knn$Attrition = as.factor(test_knn$Attrition)
+      
+      
+       model <- knn(train_knn[ , c("MonthlyIncome", "Age")], 
+            test_knn[ , c("MonthlyIncome", "Age")], 
+            train_knn$Attrition, 
+            k = 5, prob = T)
+      
+       confusionMatrix(test_knn$Attrition, model)
+     
+
+  }) # knnReview
+
+} # Server  
+shinyApp(ui, server) # Combines it all together
+
+```

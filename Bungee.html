@@ -265,10 +265,19 @@ $(document).ready(function () {
       <a href="EDA1.html">Budweiser Beer Case Study</a>
     </li>
     <li>
-      <a href="https://blackjuliet.shinyapps.io/Beers/">Shiny Beer App</a>
+      <a href="https://blackjuliet.shinyapps.io/Beers/">Shiny App | Budweiser Beer</a>
     </li>
     <li>
       <a href="Bungee.html">Barbie Bungee Activity</a>
+    </li>
+    <li>
+      <a href="Employee-Attrition.html">Frito Lay Employee Attrition Activity</a>
+    </li>
+    <li>
+      <a href="EmployeeAttritionPredictions.html">Frito Lay Emp Attr Predictions</a>
+    </li>
+    <li>
+      <a href="https://blackjuliet.shinyapps.io/Employee_Attrition/">Shiny App | Employee Attrition</a>
     </li>
   </ul>
 </li>
@@ -282,7 +291,10 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4">Budweiser Beer</a>
+      <a href="https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4">Budweiser Beer Presentation</a>
+    </li>
+    <li>
+      <a href="https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4">Frito Lay Employee Att. Pres.</a>
     </li>
   </ul>
 </li>
@@ -360,14 +372,15 @@ summary(fit)</code></pre>
 ##     Min      1Q  Median      3Q     Max 
 ## -2.8750 -0.3750  0.0625  0.6250  2.6250 
 ## 
-## Coefficients:
+## Coefficients: (1 not defined because of singularities)
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  40.1875     0.6822  58.905  &lt; 2e-16 ***
-## bandsFour    -8.8125     0.9648  -9.134 5.74e-08 ***
-## bandsOne    -25.8125     0.9648 -26.753 2.46e-15 ***
-## bandsSix      6.0625     0.9648   6.283 8.25e-06 ***
-## bandsThree  -14.3125     0.9648 -14.834 3.69e-11 ***
-## bandsTwo    -19.3542     1.0421 -18.571 1.00e-12 ***
+## (Intercept)  20.8333     0.7878  26.445 2.99e-15 ***
+## bandsFive    19.3542     1.0421  18.571 1.00e-12 ***
+## bandsFour    10.5417     1.0421  10.115 1.31e-08 ***
+## bandsOne     -6.4583     1.0421  -6.197 9.75e-06 ***
+## bandsSix     25.4167     1.0421  24.389 1.14e-14 ***
+## bandsThree    5.0417     1.0421   4.838 0.000154 ***
+## bandsTwo          NA         NA      NA       NA    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 

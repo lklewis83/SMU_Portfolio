@@ -16,6 +16,6 @@ Besides her drive to become a data scientist, she is also a mother of two girls 
 artist.
 
 ```{r echo=FALSE}
-knitr::include_graphics("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 12/lklewis83.github.io/at_Work.PNG")
+knitr::include_graphics("at_Work.PNG")
 ```
 

@@ -1,0 +1,794 @@
+---
+title: "Employee Attrition"
+author: "Lani Lewis"
+date: "2023-04-01"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r  include = FALSE}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+#install.packages("plotly")
+library(plotly)
+library(RCurl)
+library(aws.s3)
+library(gridExtra)
+library(class)
+#install.packages("class")
+library(caret)
+#install.packages("caret")
+library(e1071)
+library(kknn)
+library(tinytex)
+#library(pdflatex)
+```
+
+```{r}
+# CSV IMPORT DATA ####
+attrition <- read.csv("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2-data.csv", header = T)
+income <- read.csv("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2CompSetNoIncome1.csv", header = T)
+no_att <- read.csv("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2CompSetNoAttrition.csv", header = T)
+```
+
+```{r}
+# AWS IMPORT OF DATA ####
+#Sys.setenv("AWS_ACCESS_KEY_ID" = "your_access_key_id",           "AWS_SECRET_ACCESS_KEY" = "your_secret_access_key")
+
+#attrition <- s3read_using(FUN = read.csv,                          bucket = "ddsproject1",                           object = "CaseStudy2-data.csv") 
+#str(attrition)
+```
+
+```{r}
+# CLEAN DATA ####
+## REPLACE attrition with new values ####
+attrition$Attrition <- gsub("No", "Stayed", attrition$Attrition)
+attrition$Attrition <- gsub("Yes", "Left", attrition$Attrition)
+#attrition$Attrition
+
+## FORCE COLORS FOR Attrition ####
+colors <- c("Stayed" = "green", "Left" = "maroon")
+```
+INTRO
+------
+
+These graphs will be used to highlight Longevity at this company and the difference between Departments and Job Roles.
+
+```{r}
+# Positive ####
+p <- filter(attrition, Attrition == "Stayed") %>% 
+  ggplot(aes(y = JobRole, x = Department, color = Attrition)) +
+  geom_point(position = "jitter") +
+  xlab("Department") +
+  ylab("JobRole") +
+  scale_color_manual(values = colors) + 
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Attrition: Stayed")
+
+# Negative ####
+n <- filter(attrition, Attrition == "Left") %>% 
+  ggplot(aes(y = JobRole, x = Department, color = Attrition)) +
+  geom_point(position = "jitter") +
+  xlab("Department") +
+  ylab("JobRole") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Attrition: Left")
+
+
+grid.arrange(p, n, ncol = 2)
+```
+
+```{r}
+# LONGEVITY | Department ####
+attrition %>% ggplot(aes(x = YearsAtCompany, y = Department, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsAtCompany)), color = "black", linetype = "dashed") +
+  ylab("Department") +
+  xlab("YearsAtCompany") +
+  scale_color_manual(values = colors)
+```
+
+```{r}
+# LONGEVITY | Department - Mean Line #### 
+attrition %>% ggplot(aes(x = YearsAtCompany, y = Department, color = Attrition)) +
+  geom_point(position = "jitter") +
+  geom_vline(aes(xintercept = mean(YearsAtCompany)), color = "black", linetype = "dashed") +
+  #annotate("text", x = mean(attrition$YearsAtCompany), y = max(attrition$Department), label = "Mean Line", vjust = -3) +
+  ylab("Department") +
+  xlab("YearsAtCompany") +
+  scale_color_manual(values = colors)
+```
+
+```{r}
+summary(attrition$YearsAtCompany)
+```
+
+```{r}
+# LONGEVITY | Job Role ####
+attrition %>% ggplot(aes(x = YearsAtCompany, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("YearsAtCompany") +
+  scale_color_manual(values = colors)
+```
+
+```{r}
+# LONGEVITY | Job Role - Mean Line #### 
+attrition %>% ggplot(aes(x = YearsAtCompany, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsAtCompany)), color = "black", linetype = "dashed") +
+  #annotate("text", x = mean(attrition$YearsAtCompany), y = max(attrition$JobRole), label = "Mean Line", vjust = 0) +
+  ylab("JobRole") +
+  xlab("YearsAtCompany") +
+  scale_color_manual(values = colors)
+```
+
+Job Roles Matter
+---------------
+At this point I am noticing that Job Roles play a part in the Attrition Process. The next few chart wil investigate this theory
+
+```{r}
+# AGE | Department ####
+attrition %>% ggplot(aes(x = Age, y = Department, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("Department") +
+  xlab("Age") +
+  scale_color_manual(values = colors)
+```
+
+```{r}
+# AGE  | Department  - MEAN ####
+attrition %>% ggplot(aes(x = Age, y = Department, color = Attrition)) +
+  geom_point(position = "jitter") +
+  geom_vline(aes(xintercept = mean(Age)), color = "black", linetype = "dashed") +
+  #annotate("text", x = mean(attrition$Age), y = max(attrition$Department), label = "Mean Line", vjust = -3) +
+  ylab("Department") +
+  xlab("Age") +
+  scale_color_manual(values = colors)
+```
+
+```{r}
+# AGE - JobRole ####
+attrition %>% ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("Age") +
+  scale_color_manual(values = colors)
+```
+
+```{r}
+# AGE | JobRole - MEAN ####
+attrition %>% ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(Age)), color = "black", linetype = "dashed") +
+  #annotate("text", x = mean(attrition$Age), y = max(attrition$JobRole), label = "Mean Line", vjust = -3) +
+  ylab("JobRole") +
+  xlab("Age") +
+  scale_color_manual(values = colors)
+```
+
+```{r}
+summary(attrition$Age)
+```
+
+```{r}
+# Younger Job Roles ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  geom_vline(aes(xintercept = mean(Age)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("Age") +
+  scale_color_manual(values = colors) +
+  ggtitle("Younger Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+
+# OLDER Job Roles ####
+o <- filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  geom_vline(aes(xintercept = mean(Age)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("Age") +
+  scale_color_manual(values = colors) +
+  ggtitle("Older Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# ALL AGES Job Roles ####
+a <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  geom_vline(aes(xintercept = mean(Age)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("Age") +
+  scale_color_manual(values = colors) +
+  ggtitle("All Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(y, o, a, nrow = 3)
+```
+
+Work Life Balance Review
+---------------------
+```{r}
+# Younger Job Roles ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = WorkLifeBalance, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("WorkLifeBalance") +
+  scale_color_manual(values = colors) +
+  ggtitle("Younger Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+
+# OLDER Job Roles ####
+o <- filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = WorkLifeBalance, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("WorkLifeBalance") +
+  scale_color_manual(values = colors) +
+  ggtitle("Older Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# ALL AGES Job Roles ####
+a <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = WorkLifeBalance, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("WorkLifeBalance") +
+  scale_color_manual(values = colors) +
+  ggtitle("All Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(y, o, a, nrow = 3)
+```
+
+
+Money Importance Review
+---------------------
+```{r}
+# Younger Job Roles ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = MonthlyIncome, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(MonthlyIncome)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("MonthlyIncome") +
+  scale_color_manual(values = colors) +
+  ggtitle("Younger Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+
+# OLDER Job Roles ####
+o <- filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = MonthlyIncome, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(MonthlyIncome)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("MonthlyIncome") +
+  scale_color_manual(values = colors) +
+  ggtitle("Older Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# ALL AGES Job Roles ####
+a <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = MonthlyIncome, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(MonthlyIncome)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("MonthlyIncome") +
+  scale_color_manual(values = colors) +
+  ggtitle("All Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(y, o, a, nrow = 3)
+```
+
+Salary Increase Review
+---------------------
+```{r}
+# Younger Job Roles ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = PercentSalaryHike, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(PercentSalaryHike)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("PercentSalaryHike") +
+  scale_color_manual(values = colors) +
+  ggtitle("Younger Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+
+# OLDER Job Roles ####
+o <- filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = PercentSalaryHike, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(PercentSalaryHike)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("PercentSalaryHike") +
+  scale_color_manual(values = colors) +
+  ggtitle("Older Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# ALL AGES Job Roles ####
+a <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = PercentSalaryHike, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(PercentSalaryHike)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("PercentSalaryHike") +
+  scale_color_manual(values = colors) +
+  ggtitle("All Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(y, o, a, nrow = 3)
+```
+
+
+Years Since Last Promotion Review
+---------------
+```{r}
+# Younger Job Roles ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsSinceLastPromotion)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsSinceLastPromotion") +
+  scale_color_manual(values = colors) +
+  ggtitle("Younger Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+
+# OLDER Job Roles ####
+o <- filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsSinceLastPromotion)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsSinceLastPromotion") +
+  scale_color_manual(values = colors) +
+  ggtitle("Older Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# ALL AGES Job Roles ####
+a <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsSinceLastPromotion)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsSinceLastPromotion") +
+  scale_color_manual(values = colors) +
+  ggtitle("All Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(y, o, a, nrow = 3)
+```
+
+```{r}
+# Younger Job Roles ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsInCurrentRole)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsInCurrentRole") +
+  scale_color_manual(values = colors) +
+  ggtitle("Younger Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+
+# OLDER Job Roles ####
+o <- filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsInCurrentRole)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsInCurrentRole") +
+  scale_color_manual(values = colors) +
+  ggtitle("Older Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# ALL AGES Job Roles ####
+a <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsInCurrentRole)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsInCurrentRole") +
+  scale_color_manual(values = colors) +
+  ggtitle("All Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(y, o, a, nrow = 3)
+```
+
+Gender Review
+-------------
+```{r}
+# Younger Job Roles ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = Gender, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("Gender") +
+  scale_color_manual(values = colors) +
+  ggtitle("Younger Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+
+# OLDER Job Roles ####
+o <- filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = Gender, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("Gender") +
+  scale_color_manual(values = colors) +
+  ggtitle("Older Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# ALL AGES Job Roles ####
+a <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = Gender, y = JobRole, color = Attrition)) +
+  geom_point(position = "jitter") +
+  ylab("JobRole") +
+  xlab("Gender") +
+  scale_color_manual(values = colors) +
+  ggtitle("All Ages") +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(y, o, a, nrow = 3)
+```
+
+Younger Job Role Review
+---------------------
+```{r}
+# Training Times Last Year ####
+filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = TrainingTimesLastYear, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(TrainingTimesLastYear)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("TrainingTimesLastYear") +
+  ggtitle("Training Times Last Year") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r} 
+# Education ####
+filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = Education, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(Education)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("Education") +
+  ggtitle("Education") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r} 
+# Distance From Home ####
+filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = DistanceFromHome, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(DistanceFromHome)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("DistanceFromHome") +
+  ggtitle("Distance From Home") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r} 
+# Years in Current Role ####
+filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsInCurrentRole)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsInCurrentRole") +
+  ggtitle("Years In Current Role") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r}  
+# Years Since Last Promotion Review ####
+filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources") %>%
+  ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsSinceLastPromotion)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsSinceLastPromotion") +
+  ggtitle("Years Since Last Promotion") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+
+Older Job Role Review
+---------------------
+```{r}
+# JobInvolvement ####
+filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = JobInvolvement, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(JobInvolvement)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("JobInvolvement") +
+  ggtitle("Job Involvement") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r}
+# RelationshipSatisfaction ####
+filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = RelationshipSatisfaction, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(RelationshipSatisfaction)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("RelationshipSatisfaction") +
+  ggtitle("Relationship Satisfaction") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+
+```{r} 
+# Total Working Years ####
+filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = TotalWorkingYears, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(TotalWorkingYears)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("TotalWorkingYears") +
+  ggtitle("Total Working Years") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r} 
+# Education ####
+filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = Education, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(Education)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("Education") +
+  ggtitle("Education") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r} 
+# Years in Current Role ####
+filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsInCurrentRole)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsInCurrentRole") +
+  ggtitle("Years In Current Role") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r}  
+# Years Since Last Promotion Review ####
+filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
+  ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsSinceLastPromotion)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsSinceLastPromotion") +
+  ggtitle("Years Since Last Promotion") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+
+Generation z Specific
+---------------
+```{r}
+# Training Times Last Year ####
+t <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources" & Age < 22) %>%
+  ggplot(aes(x = TrainingTimesLastYear, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(TrainingTimesLastYear)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("TrainingTimesLastYear") +
+  ggtitle("Training Times Last Year") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# Education ####
+e <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources" & Age < 22) %>%
+  ggplot(aes(x = Education, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(Education)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("Education") +
+  ggtitle("Education") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+grid.arrange(t, e, nrow = 2)
+```
+
+```{r}
+# Distance From Home ####
+filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources" & Age < 22) %>%
+  ggplot(aes(x = DistanceFromHome, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(DistanceFromHome)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("DistanceFromHome") +
+  ggtitle("Distance From Home") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+```
+
+```{r}
+# Years in Current Role ####
+y <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources" & Age < 22) %>%
+  ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsInCurrentRole)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsInCurrentRole") +
+  ggtitle("Years In Current Role") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+# Years Since Last Promotion Review ####
+p <- filter(attrition, JobRole == "Sales Representative" | JobRole == "Human Resources" & Age < 22) %>%
+  ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsSinceLastPromotion)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsSinceLastPromotion") +
+  ggtitle("Years Since Last Promotion") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+grid.arrange(y, p, nrow = 2)
+```
+
+
+All Aged Groups
+---------------
+```{r}
+# Training Times Last Year ####
+t <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = TrainingTimesLastYear, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(TrainingTimesLastYear)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("TrainingTimesLastYear") +
+  ggtitle("Training Times Last Year") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+# Education ####
+e <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = Education, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(Education)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("Education") +
+  ggtitle("Education") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+grid.arrange(t, e, nrow = 2)
+```
+
+```{r}
+# Distance From Home ####
+filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = DistanceFromHome, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(DistanceFromHome)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("DistanceFromHome") +
+  ggtitle("Distance From Home") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+```
+
+```{r}
+# Years in Current Role ####
+y <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsInCurrentRole)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsInCurrentRole") +
+  ggtitle("Years In Current Role") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+# Years Since Last Promotion Review ####
+p <- filter(attrition, JobRole == "Research Scientist" | JobRole == "Sales Executive"  | JobRole == "Laboratory Technician" | JobRole == "Healthcare Representative"| JobRole == "Manufacturing Director" ) %>%
+  ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
+  geom_boxplot() +
+  geom_vline(aes(xintercept = mean(YearsSinceLastPromotion)), color = "black", linetype = "dashed") +
+  ylab("JobRole") +
+  xlab("YearsSinceLastPromotion") +
+  ggtitle("Years Since Last Promotion") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+grid.arrange(y, p, nrow = 2)
+```

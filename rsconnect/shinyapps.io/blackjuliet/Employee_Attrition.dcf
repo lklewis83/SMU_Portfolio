@@ -1,0 +1,14 @@
+name: Employee_Attrition
+title:
+username:
+account: blackjuliet
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8788774
+bundleId: 7063369
+url: https://blackjuliet.shinyapps.io/Employee_Attrition/
+when: 1680914807.29116
+lastSyncTime: 1680914807.29117
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Case2PredictionsClassifyEXAMPLE.csv|Case2PredictionsRegressEXAMPLE.csv|CaseStudy2 Fall 2022.docx|CaseStudy2 Spring 2023.docx|Deep_Dive.html|Deep_Dive.rmd|Employee-Attrition.html|Employee-Attrition.tex|Employee Attrition.rmd|Frito Lay_EDA2_Lani.Lewis.pptx|Generational Data.docx|Oversamp Undersamp R CODE.R|ReadMe.md|SimulatedFraud.csv

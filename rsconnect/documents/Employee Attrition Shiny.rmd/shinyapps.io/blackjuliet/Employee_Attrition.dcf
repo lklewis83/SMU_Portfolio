@@ -1,0 +1,13 @@
+name: Employee_Attrition
+title: Employee_Attrition
+username:
+account: blackjuliet
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8788774
+bundleId: 7066075
+url: https://blackjuliet.shinyapps.io/Employee_Attrition/
+when: 1680999798.6411
+lastSyncTime: 1680999798.64112
+asMultiple: FALSE
+asStatic: FALSE

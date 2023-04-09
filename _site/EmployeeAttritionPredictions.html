@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lani Lewis" />
+
+<meta name="date" content="2023-04-01" />
+
+<title>Employee Attrition</title>
+
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SMU Data Science Protfolio</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-heart"></span>
+     
+    Home
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-file"></span>
+     
+    Case Studies
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="EDA1.html">Budweiser Beer Case Study</a>
+    </li>
+    <li>
+      <a href="https://blackjuliet.shinyapps.io/Beers/">Shiny App | Budweiser Beer</a>
+    </li>
+    <li>
+      <a href="Bungee.html">Barbie Bungee Activity</a>
+    </li>
+    <li>
+      <a href="Employee-Attrition.html">Frito Lay Employee Attrition Activity</a>
+    </li>
+    <li>
+      <a href="EmployeeAttritionPredictions.html">Frito Lay Emp Attr Predictions</a>
+    </li>
+    <li>
+      <a href="https://blackjuliet.shinyapps.io/Employee_Attrition/">Shiny App | Employee Attrition</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-file"></span>
+     
+    Presentations
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4">Budweiser Beer Presentation</a>
+    </li>
+    <li>
+      <a href="https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4">Frito Lay Employee Att. Pres.</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Employee Attrition</h1>
+<h4 class="author">Lani Lewis</h4>
+<h4 class="date">2023-04-01</h4>
+
+</div>
+
+
+<pre class="r"><code># CSV IMPORT DATA ####
+attrition &lt;- read.csv(&quot;CaseStudy2-data.csv&quot;, header = T)
+income &lt;- read.csv(&quot;CaseStudy2CompSetNoIncome1.csv&quot;, header = T)
+no_att &lt;- read.csv(&quot;CaseStudy2CompSetNoAttrition.csv&quot;, header = T)</code></pre>
+<pre class="r"><code># AWS IMPORT OF DATA ####
+# Get your personal key from IAM &quot;security credentials&quot;
+# Validate who your are accessing aws bucket
+Sys.setenv(&quot;AWS_ACCESS_KEY_ID&quot; = &quot;AKIAQEJ7KGHWUUXL4UJV&quot;, 
+           &quot;AWS_SECRET_ACCESS_KEY&quot; = &quot;z/YE/OyZdY90FwSgjRUcWJ4sz+/6aZLOCA8vP9ya&quot;,
+           &quot;AWS_DEFAULT_REGION&quot; = &quot;us-east-2&quot;)
+
+
+attrition_aws &lt;- s3read_using(FUN = read.csv,                          
+                          bucket = &quot;ddsproject1&quot;, 
+                          object = &quot;CaseStudy2-data.csv&quot;) 
+
+
+str(attrition_aws)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    870 obs. of  36 variables:
+##  $ ID                      : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Age                     : int  32 40 35 32 24 27 41 37 34 34 ...
+##  $ Attrition               : chr  &quot;No&quot; &quot;No&quot; &quot;No&quot; &quot;No&quot; ...
+##  $ BusinessTravel          : chr  &quot;Travel_Rarely&quot; &quot;Travel_Rarely&quot; &quot;Travel_Frequently&quot; &quot;Travel_Rarely&quot; ...
+##  $ DailyRate               : int  117 1308 200 801 567 294 1283 309 1333 653 ...
+##  $ Department              : chr  &quot;Sales&quot; &quot;Research &amp; Development&quot; &quot;Research &amp; Development&quot; &quot;Sales&quot; ...
+##  $ DistanceFromHome        : int  13 14 18 1 2 10 5 10 10 10 ...
+##  $ Education               : int  4 3 2 4 1 2 5 4 4 4 ...
+##  $ EducationField          : chr  &quot;Life Sciences&quot; &quot;Medical&quot; &quot;Life Sciences&quot; &quot;Marketing&quot; ...
+##  $ EmployeeCount           : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ EmployeeNumber          : int  859 1128 1412 2016 1646 733 1448 1105 1055 1597 ...
+##  $ EnvironmentSatisfaction : int  2 3 3 3 1 4 2 4 3 4 ...
+##  $ Gender                  : chr  &quot;Male&quot; &quot;Male&quot; &quot;Male&quot; &quot;Female&quot; ...
+##  $ HourlyRate              : int  73 44 60 48 32 32 90 88 87 92 ...
+##  $ JobInvolvement          : int  3 2 3 3 3 3 4 2 3 2 ...
+##  $ JobLevel                : int  2 5 3 3 1 3 1 2 1 2 ...
+##  $ JobRole                 : chr  &quot;Sales Executive&quot; &quot;Research Director&quot; &quot;Manufacturing Director&quot; &quot;Sales Executive&quot; ...
+##  $ JobSatisfaction         : int  4 3 4 4 4 1 3 4 3 3 ...
+##  $ MaritalStatus           : chr  &quot;Divorced&quot; &quot;Single&quot; &quot;Single&quot; &quot;Married&quot; ...
+##  $ MonthlyIncome           : int  4403 19626 9362 10422 3760 8793 2127 6694 2220 5063 ...
+##  $ MonthlyRate             : int  9250 17544 19944 24032 17218 4809 5561 24223 18410 15332 ...
+##  $ NumCompaniesWorked      : int  2 1 2 1 1 1 2 2 1 1 ...
+##  $ Over18                  : chr  &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; ...
+##  $ OverTime                : chr  &quot;No&quot; &quot;No&quot; &quot;No&quot; &quot;No&quot; ...
+##  $ PercentSalaryHike       : int  11 14 11 19 13 21 12 14 19 14 ...
+##  $ PerformanceRating       : int  3 3 3 3 3 4 3 3 3 3 ...
+##  $ RelationshipSatisfaction: int  3 1 3 3 3 3 1 3 4 2 ...
+##  $ StandardHours           : int  80 80 80 80 80 80 80 80 80 80 ...
+##  $ StockOptionLevel        : int  1 0 0 2 0 2 0 3 1 1 ...
+##  $ TotalWorkingYears       : int  8 21 10 14 6 9 7 8 1 8 ...
+##  $ TrainingTimesLastYear   : int  3 2 2 3 2 4 5 5 2 3 ...
+##  $ WorkLifeBalance         : int  2 4 3 3 3 2 2 3 3 2 ...
+##  $ YearsAtCompany          : int  5 20 2 14 6 9 4 1 1 8 ...
+##  $ YearsInCurrentRole      : int  2 7 2 10 3 7 2 0 1 2 ...
+##  $ YearsSinceLastPromotion : int  0 4 2 5 1 1 0 0 0 7 ...
+##  $ YearsWithCurrManager    : int  3 9 2 7 3 7 3 0 0 7 ...</code></pre>
+<pre class="r"><code># CLEAN DATA ####
+## REPLACE attrition with new values ####
+attrition$Attrition &lt;- gsub(&quot;No&quot;, &quot;Stayed&quot;, attrition$Attrition)
+attrition$Attrition &lt;- gsub(&quot;Yes&quot;, &quot;Left&quot;, attrition$Attrition)
+#attrition$Attrition
+
+## FORCE COLORS FOR Attrition ####
+colors &lt;- c(&quot;Stayed&quot; = &quot;green&quot;, &quot;Left&quot; = &quot;red&quot;)</code></pre>
+<div id="intro" class="section level2">
+<h2>INTRO</h2>
+<p>This document will be used to review the predictions of KNN, and
+Naive Bayes. And then perform a six step test.</p>
+<pre class="r"><code># CLEAN DATA ####
+## Create Factor Variables for Classification ####
+income$Attrition = as.factor(income$Attrition)
+
+attrition$Attrition = as.factor(attrition$Attrition)
+# attrition$Department = as.factor(attrition$Department)
+
+# Regulate results
+set.seed(123)
+
+## Split Data 70-30 | Attrition ####
+index &lt;- createDataPartition(attrition$Attrition, p = 0.7, list = FALSE)
+
+train_att &lt;- attrition[index, ]
+
+test_att &lt;- attrition[-index, ]
+
+## Split Data 70-30 | Monthly Income ####
+index1 &lt;- createDataPartition(attrition$MonthlyIncome, p = 0.7, list = FALSE)
+
+train_income &lt;- attrition[index1, ]
+
+test_income &lt;- attrition[-index1, ]</code></pre>
+</div>
+<div id="knn---k-nearest-neighbors" class="section level2">
+<h2>KNN - K Nearest Neighbors</h2>
+<p>Find the Best K Option</p>
+<pre class="r"><code>## Create a tuning grid ####
+#tuneGrid &lt;- expand.grid(kmax = 1:10, distance = 1:3, kernel = c(&quot;triangular&quot;, &quot;epanechnikov&quot;, &quot;gaussian&quot;))
+tuneGrid &lt;- expand.grid(kmax = 1:10, distance = 1:3, kernel = c(&quot;gaussian&quot;))
+
+model &lt;- train(MonthlyIncome ~ JobRole + Attrition, 
+#model &lt;- train(MonthlyIncome ~ Attrition, 
+               method = &quot;kknn&quot;, 
+               data = train_att, 
+               preProcess = c(&quot;center&quot;, &quot;scale&quot;), 
+               tuneGrid = tuneGrid,
+               trControl = trainControl(method = &quot;cv&quot;, number = 10, verboseIter = TRUE))</code></pre>
+<pre><code>## + Fold01: kmax= 1, distance=1, kernel=gaussian 
+## - Fold01: kmax= 1, distance=1, kernel=gaussian 
+## + Fold01: kmax= 2, distance=1, kernel=gaussian 
+## - Fold01: kmax= 2, distance=1, kernel=gaussian 
+## + Fold01: kmax= 3, distance=1, kernel=gaussian 
+## - Fold01: kmax= 3, distance=1, kernel=gaussian 
+## + Fold01: kmax= 4, distance=1, kernel=gaussian 
+## - Fold01: kmax= 4, distance=1, kernel=gaussian 
+## + Fold01: kmax= 5, distance=1, kernel=gaussian 
+## - Fold01: kmax= 5, distance=1, kernel=gaussian 
+## + Fold01: kmax= 6, distance=1, kernel=gaussian 
+## - Fold01: kmax= 6, distance=1, kernel=gaussian 
+## + Fold01: kmax= 7, distance=1, kernel=gaussian 
+## - Fold01: kmax= 7, distance=1, kernel=gaussian 
+## + Fold01: kmax= 8, distance=1, kernel=gaussian 
+## - Fold01: kmax= 8, distance=1, kernel=gaussian 
+## + Fold01: kmax= 9, distance=1, kernel=gaussian 
+## - Fold01: kmax= 9, distance=1, kernel=gaussian 
+## + Fold01: kmax=10, distance=1, kernel=gaussian 
+## - Fold01: kmax=10, distance=1, kernel=gaussian 
+## + Fold01: kmax= 1, distance=2, kernel=gaussian 
+## - Fold01: kmax= 1, distance=2, kernel=gaussian 
+## + Fold01: kmax= 2, distance=2, kernel=gaussian 
+## - Fold01: kmax= 2, distance=2, kernel=gaussian 
+## + Fold01: kmax= 3, distance=2, kernel=gaussian 
+## - Fold01: kmax= 3, distance=2, kernel=gaussian 
+## + Fold01: kmax= 4, distance=2, kernel=gaussian 
+## - Fold01: kmax= 4, distance=2, kernel=gaussian 
+## + Fold01: kmax= 5, distance=2, kernel=gaussian 
+## - Fold01: kmax= 5, distance=2, kernel=gaussian 
+## + Fold01: kmax= 6, distance=2, kernel=gaussian 
+## - Fold01: kmax= 6, distance=2, kernel=gaussian 
+## + Fold01: kmax= 7, distance=2, kernel=gaussian 
+## - Fold01: kmax= 7, distance=2, kernel=gaussian 
+## + Fold01: kmax= 8, distance=2, kernel=gaussian 
+## - Fold01: kmax= 8, distance=2, kernel=gaussian 
+## + Fold01: kmax= 9, distance=2, kernel=gaussian 
+## - Fold01: kmax= 9, distance=2, kernel=gaussian 
+## + Fold01: kmax=10, distance=2, kernel=gaussian 
+## - Fold01: kmax=10, distance=2, kernel=gaussian 
+## + Fold01: kmax= 1, distance=3, kernel=gaussian 
+## - Fold01: kmax= 1, distance=3, kernel=gaussian 
+## + Fold01: kmax= 2, distance=3, kernel=gaussian 
+## - Fold01: kmax= 2, distance=3, kernel=gaussian 
+## + Fold01: kmax= 3, distance=3, kernel=gaussian 
+## - Fold01: kmax= 3, distance=3, kernel=gaussian 
+## + Fold01: kmax= 4, distance=3, kernel=gaussian 
+## - Fold01: kmax= 4, distance=3, kernel=gaussian 
+## + Fold01: kmax= 5, distance=3, kernel=gaussian 
+## - Fold01: kmax= 5, distance=3, kernel=gaussian 
+## + Fold01: kmax= 6, distance=3, kernel=gaussian 
+## - Fold01: kmax= 6, distance=3, kernel=gaussian 
+## + Fold01: kmax= 7, distance=3, kernel=gaussian 
+## - Fold01: kmax= 7, distance=3, kernel=gaussian 
+## + Fold01: kmax= 8, distance=3, kernel=gaussian 
+## - Fold01: kmax= 8, distance=3, kernel=gaussian 
+## + Fold01: kmax= 9, distance=3, kernel=gaussian 
+## - Fold01: kmax= 9, distance=3, kernel=gaussian 
+## + Fold01: kmax=10, distance=3, kernel=gaussian 
+## - Fold01: kmax=10, distance=3, kernel=gaussian 
+## + Fold02: kmax= 1, distance=1, kernel=gaussian 
+## - Fold02: kmax= 1, distance=1, kernel=gaussian 
+## + Fold02: kmax= 2, distance=1, kernel=gaussian 
+## - Fold02: kmax= 2, distance=1, kernel=gaussian 
+## + Fold02: kmax= 3, distance=1, kernel=gaussian 
+## - Fold02: kmax= 3, distance=1, kernel=gaussian 
+## + Fold02: kmax= 4, distance=1, kernel=gaussian 
+## - Fold02: kmax= 4, distance=1, kernel=gaussian 
+## + Fold02: kmax= 5, distance=1, kernel=gaussian 
+## - Fold02: kmax= 5, distance=1, kernel=gaussian 
+## + Fold02: kmax= 6, distance=1, kernel=gaussian 
+## - Fold02: kmax= 6, distance=1, kernel=gaussian 
+## + Fold02: kmax= 7, distance=1, kernel=gaussian 
+## - Fold02: kmax= 7, distance=1, kernel=gaussian 
+## + Fold02: kmax= 8, distance=1, kernel=gaussian 
+## - Fold02: kmax= 8, distance=1, kernel=gaussian 
+## + Fold02: kmax= 9, distance=1, kernel=gaussian 
+## - Fold02: kmax= 9, distance=1, kernel=gaussian 
+## + Fold02: kmax=10, distance=1, kernel=gaussian 
+## - Fold02: kmax=10, distance=1, kernel=gaussian 
+## + Fold02: kmax= 1, distance=2, kernel=gaussian 
+## - Fold02: kmax= 1, distance=2, kernel=gaussian 
+## + Fold02: kmax= 2, distance=2, kernel=gaussian 
+## - Fold02: kmax= 2, distance=2, kernel=gaussian 
+## + Fold02: kmax= 3, distance=2, kernel=gaussian 
+## - Fold02: kmax= 3, distance=2, kernel=gaussian 
+## + Fold02: kmax= 4, distance=2, kernel=gaussian 
+## - Fold02: kmax= 4, distance=2, kernel=gaussian 
+## + Fold02: kmax= 5, distance=2, kernel=gaussian 
+## - Fold02: kmax= 5, distance=2, kernel=gaussian 
+## + Fold02: kmax= 6, distance=2, kernel=gaussian 
+## - Fold02: kmax= 6, distance=2, kernel=gaussian 
+## + Fold02: kmax= 7, distance=2, kernel=gaussian 
+## - Fold02: kmax= 7, distance=2, kernel=gaussian 
+## + Fold02: kmax= 8, distance=2, kernel=gaussian 
+## - Fold02: kmax= 8, distance=2, kernel=gaussian 
+## + Fold02: kmax= 9, distance=2, kernel=gaussian 
+## - Fold02: kmax= 9, distance=2, kernel=gaussian 
+## + Fold02: kmax=10, distance=2, kernel=gaussian 
+## - Fold02: kmax=10, distance=2, kernel=gaussian 
+## + Fold02: kmax= 1, distance=3, kernel=gaussian 
+## - Fold02: kmax= 1, distance=3, kernel=gaussian 
+## + Fold02: kmax= 2, distance=3, kernel=gaussian 
+## - Fold02: kmax= 2, distance=3, kernel=gaussian 
+## + Fold02: kmax= 3, distance=3, kernel=gaussian 
+## - Fold02: kmax= 3, distance=3, kernel=gaussian 
+## + Fold02: kmax= 4, distance=3, kernel=gaussian 
+## - Fold02: kmax= 4, distance=3, kernel=gaussian 
+## + Fold02: kmax= 5, distance=3, kernel=gaussian 
+## - Fold02: kmax= 5, distance=3, kernel=gaussian 
+## + Fold02: kmax= 6, distance=3, kernel=gaussian 
+## - Fold02: kmax= 6, distance=3, kernel=gaussian 
+## + Fold02: kmax= 7, distance=3, kernel=gaussian 
+## - Fold02: kmax= 7, distance=3, kernel=gaussian 
+## + Fold02: kmax= 8, distance=3, kernel=gaussian 
+## - Fold02: kmax= 8, distance=3, kernel=gaussian 
+## + Fold02: kmax= 9, distance=3, kernel=gaussian 
+## - Fold02: kmax= 9, distance=3, kernel=gaussian 
+## + Fold02: kmax=10, distance=3, kernel=gaussian 
+## - Fold02: kmax=10, distance=3, kernel=gaussian 
+## + Fold03: kmax= 1, distance=1, kernel=gaussian 
+## - Fold03: kmax= 1, distance=1, kernel=gaussian 
+## + Fold03: kmax= 2, distance=1, kernel=gaussian 
+## - Fold03: kmax= 2, distance=1, kernel=gaussian 
+## + Fold03: kmax= 3, distance=1, kernel=gaussian 
+## - Fold03: kmax= 3, distance=1, kernel=gaussian 
+## + Fold03: kmax= 4, distance=1, kernel=gaussian 
+## - Fold03: kmax= 4, distance=1, kernel=gaussian 
+## + Fold03: kmax= 5, distance=1, kernel=gaussian 
+## - Fold03: kmax= 5, distance=1, kernel=gaussian 
+## + Fold03: kmax= 6, distance=1, kernel=gaussian 
+## - Fold03: kmax= 6, distance=1, kernel=gaussian 
+## + Fold03: kmax= 7, distance=1, kernel=gaussian 
+## - Fold03: kmax= 7, distance=1, kernel=gaussian 
+## + Fold03: kmax= 8, distance=1, kernel=gaussian 
+## - Fold03: kmax= 8, distance=1, kernel=gaussian 
+## + Fold03: kmax= 9, distance=1, kernel=gaussian 
+## - Fold03: kmax= 9, distance=1, kernel=gaussian 
+## + Fold03: kmax=10, distance=1, kernel=gaussian 
+## - Fold03: kmax=10, distance=1, kernel=gaussian 
+## + Fold03: kmax= 1, distance=2, kernel=gaussian 
+## - Fold03: kmax= 1, distance=2, kernel=gaussian 
+## + Fold03: kmax= 2, distance=2, kernel=gaussian 
+## - Fold03: kmax= 2, distance=2, kernel=gaussian 
+## + Fold03: kmax= 3, distance=2, kernel=gaussian 
+## - Fold03: kmax= 3, distance=2, kernel=gaussian 
+## + Fold03: kmax= 4, distance=2, kernel=gaussian 
+## - Fold03: kmax= 4, distance=2, kernel=gaussian 
+## + Fold03: kmax= 5, distance=2, kernel=gaussian 
+## - Fold03: kmax= 5, distance=2, kernel=gaussian 
+## + Fold03: kmax= 6, distance=2, kernel=gaussian 
+## - Fold03: kmax= 6, distance=2, kernel=gaussian 
+## + Fold03: kmax= 7, distance=2, kernel=gaussian 
+## - Fold03: kmax= 7, distance=2, kernel=gaussian 
+## + Fold03: kmax= 8, distance=2, kernel=gaussian 
+## - Fold03: kmax= 8, distance=2, kernel=gaussian 
+## + Fold03: kmax= 9, distance=2, kernel=gaussian 
+## - Fold03: kmax= 9, distance=2, kernel=gaussian 
+## + Fold03: kmax=10, distance=2, kernel=gaussian 
+## - Fold03: kmax=10, distance=2, kernel=gaussian 
+## + Fold03: kmax= 1, distance=3, kernel=gaussian 
+## - Fold03: kmax= 1, distance=3, kernel=gaussian 
+## + Fold03: kmax= 2, distance=3, kernel=gaussian 
+## - Fold03: kmax= 2, distance=3, kernel=gaussian 
+## + Fold03: kmax= 3, distance=3, kernel=gaussian 
+## - Fold03: kmax= 3, distance=3, kernel=gaussian 
+## + Fold03: kmax= 4, distance=3, kernel=gaussian 
+## - Fold03: kmax= 4, distance=3, kernel=gaussian 
+## + Fold03: kmax= 5, distance=3, kernel=gaussian 
+## - Fold03: kmax= 5, distance=3, kernel=gaussian 
+## + Fold03: kmax= 6, distance=3, kernel=gaussian 
+## - Fold03: kmax= 6, distance=3, kernel=gaussian 
+## + Fold03: kmax= 7, distance=3, kernel=gaussian 
+## - Fold03: kmax= 7, distance=3, kernel=gaussian 
+## + Fold03: kmax= 8, distance=3, kernel=gaussian 
+## - Fold03: kmax= 8, distance=3, kernel=gaussian 
+## + Fold03: kmax= 9, distance=3, kernel=gaussian 
+## - Fold03: kmax= 9, distance=3, kernel=gaussian 
+## + Fold03: kmax=10, distance=3, kernel=gaussian 
+## - Fold03: kmax=10, distance=3, kernel=gaussian 
+## + Fold04: kmax= 1, distance=1, kernel=gaussian 
+## - Fold04: kmax= 1, distance=1, kernel=gaussian 
+## + Fold04: kmax= 2, distance=1, kernel=gaussian 
+## - Fold04: kmax= 2, distance=1, kernel=gaussian 
+## + Fold04: kmax= 3, distance=1, kernel=gaussian 
+## - Fold04: kmax= 3, distance=1, kernel=gaussian 
+## + Fold04: kmax= 4, distance=1, kernel=gaussian 
+## - Fold04: kmax= 4, distance=1, kernel=gaussian 
+## + Fold04: kmax= 5, distance=1, kernel=gaussian 
+## - Fold04: kmax= 5, distance=1, kernel=gaussian 
+## + Fold04: kmax= 6, distance=1, kernel=gaussian 
+## - Fold04: kmax= 6, distance=1, kernel=gaussian 
+## + Fold04: kmax= 7, distance=1, kernel=gaussian 
+## - Fold04: kmax= 7, distance=1, kernel=gaussian 
+## + Fold04: kmax= 8, distance=1, kernel=gaussian 
+## - Fold04: kmax= 8, distance=1, kernel=gaussian 
+## + Fold04: kmax= 9, distance=1, kernel=gaussian 
+## - Fold04: kmax= 9, distance=1, kernel=gaussian 
+## + Fold04: kmax=10, distance=1, kernel=gaussian 
+## - Fold04: kmax=10, distance=1, kernel=gaussian 
+## + Fold04: kmax= 1, distance=2, kernel=gaussian 
+## - Fold04: kmax= 1, distance=2, kernel=gaussian 
+## + Fold04: kmax= 2, distance=2, kernel=gaussian 
+## - Fold04: kmax= 2, distance=2, kernel=gaussian 
+## + Fold04: kmax= 3, distance=2, kernel=gaussian 
+## - Fold04: kmax= 3, distance=2, kernel=gaussian 
+## + Fold04: kmax= 4, distance=2, kernel=gaussian 
+## - Fold04: kmax= 4, distance=2, kernel=gaussian 
+## + Fold04: kmax= 5, distance=2, kernel=gaussian 
+## - Fold04: kmax= 5, distance=2, kernel=gaussian 
+## + Fold04: kmax= 6, distance=2, kernel=gaussian 
+## - Fold04: kmax= 6, distance=2, kernel=gaussian 
+## + Fold04: kmax= 7, distance=2, kernel=gaussian 
+## - Fold04: kmax= 7, distance=2, kernel=gaussian 
+## + Fold04: kmax= 8, distance=2, kernel=gaussian 
+## - Fold04: kmax= 8, distance=2, kernel=gaussian 
+## + Fold04: kmax= 9, distance=2, kernel=gaussian 
+## - Fold04: kmax= 9, distance=2, kernel=gaussian 
+## + Fold04: kmax=10, distance=2, kernel=gaussian 
+## - Fold04: kmax=10, distance=2, kernel=gaussian 
+## + Fold04: kmax= 1, distance=3, kernel=gaussian 
+## - Fold04: kmax= 1, distance=3, kernel=gaussian 
+## + Fold04: kmax= 2, distance=3, kernel=gaussian 
+## - Fold04: kmax= 2, distance=3, kernel=gaussian 
+## + Fold04: kmax= 3, distance=3, kernel=gaussian 
+## - Fold04: kmax= 3, distance=3, kernel=gaussian 
+## + Fold04: kmax= 4, distance=3, kernel=gaussian 
+## - Fold04: kmax= 4, distance=3, kernel=gaussian 
+## + Fold04: kmax= 5, distance=3, kernel=gaussian 
+## - Fold04: kmax= 5, distance=3, kernel=gaussian 
+## + Fold04: kmax= 6, distance=3, kernel=gaussian 
+## - Fold04: kmax= 6, distance=3, kernel=gaussian 
+## + Fold04: kmax= 7, distance=3, kernel=gaussian 
+## - Fold04: kmax= 7, distance=3, kernel=gaussian 
+## + Fold04: kmax= 8, distance=3, kernel=gaussian 
+## - Fold04: kmax= 8, distance=3, kernel=gaussian 
+## + Fold04: kmax= 9, distance=3, kernel=gaussian 
+## - Fold04: kmax= 9, distance=3, kernel=gaussian 
+## + Fold04: kmax=10, distance=3, kernel=gaussian 
+## - Fold04: kmax=10, distance=3, kernel=gaussian 
+## + Fold05: kmax= 1, distance=1, kernel=gaussian 
+## - Fold05: kmax= 1, distance=1, kernel=gaussian 
+## + Fold05: kmax= 2, distance=1, kernel=gaussian 
+## - Fold05: kmax= 2, distance=1, kernel=gaussian 
+## + Fold05: kmax= 3, distance=1, kernel=gaussian 
+## - Fold05: kmax= 3, distance=1, kernel=gaussian 
+## + Fold05: kmax= 4, distance=1, kernel=gaussian 
+## - Fold05: kmax= 4, distance=1, kernel=gaussian 
+## + Fold05: kmax= 5, distance=1, kernel=gaussian 
+## - Fold05: kmax= 5, distance=1, kernel=gaussian 
+## + Fold05: kmax= 6, distance=1, kernel=gaussian 
+## - Fold05: kmax= 6, distance=1, kernel=gaussian 
+## + Fold05: kmax= 7, distance=1, kernel=gaussian 
+## - Fold05: kmax= 7, distance=1, kernel=gaussian 
+## + Fold05: kmax= 8, distance=1, kernel=gaussian 
+## - Fold05: kmax= 8, distance=1, kernel=gaussian 
+## + Fold05: kmax= 9, distance=1, kernel=gaussian 
+## - Fold05: kmax= 9, distance=1, kernel=gaussian 
+## + Fold05: kmax=10, distance=1, kernel=gaussian 
+## - Fold05: kmax=10, distance=1, kernel=gaussian 
+## + Fold05: kmax= 1, distance=2, kernel=gaussian 
+## - Fold05: kmax= 1, distance=2, kernel=gaussian 
+## + Fold05: kmax= 2, distance=2, kernel=gaussian 
+## - Fold05: kmax= 2, distance=2, kernel=gaussian 
+## + Fold05: kmax= 3, distance=2, kernel=gaussian 
+## - Fold05: kmax= 3, distance=2, kernel=gaussian 
+## + Fold05: kmax= 4, distance=2, kernel=gaussian 
+## - Fold05: kmax= 4, distance=2, kernel=gaussian 
+## + Fold05: kmax= 5, distance=2, kernel=gaussian 
+## - Fold05: kmax= 5, distance=2, kernel=gaussian 
+## + Fold05: kmax= 6, distance=2, kernel=gaussian 
+## - Fold05: kmax= 6, distance=2, kernel=gaussian 
+## + Fold05: kmax= 7, distance=2, kernel=gaussian 
+## - Fold05: kmax= 7, distance=2, kernel=gaussian 
+## + Fold05: kmax= 8, distance=2, kernel=gaussian 
+## - Fold05: kmax= 8, distance=2, kernel=gaussian 
+## + Fold05: kmax= 9, distance=2, kernel=gaussian 
+## - Fold05: kmax= 9, distance=2, kernel=gaussian 
+## + Fold05: kmax=10, distance=2, kernel=gaussian 
+## - Fold05: kmax=10, distance=2, kernel=gaussian 
+## + Fold05: kmax= 1, distance=3, kernel=gaussian 
+## - Fold05: kmax= 1, distance=3, kernel=gaussian 
+## + Fold05: kmax= 2, distance=3, kernel=gaussian 
+## - Fold05: kmax= 2, distance=3, kernel=gaussian 
+## + Fold05: kmax= 3, distance=3, kernel=gaussian 
+## - Fold05: kmax= 3, distance=3, kernel=gaussian 
+## + Fold05: kmax= 4, distance=3, kernel=gaussian 
+## - Fold05: kmax= 4, distance=3, kernel=gaussian 
+## + Fold05: kmax= 5, distance=3, kernel=gaussian 
+## - Fold05: kmax= 5, distance=3, kernel=gaussian 
+## + Fold05: kmax= 6, distance=3, kernel=gaussian 
+## - Fold05: kmax= 6, distance=3, kernel=gaussian 
+## + Fold05: kmax= 7, distance=3, kernel=gaussian 
+## - Fold05: kmax= 7, distance=3, kernel=gaussian 
+## + Fold05: kmax= 8, distance=3, kernel=gaussian 
+## - Fold05: kmax= 8, distance=3, kernel=gaussian 
+## + Fold05: kmax= 9, distance=3, kernel=gaussian 
+## - Fold05: kmax= 9, distance=3, kernel=gaussian 
+## + Fold05: kmax=10, distance=3, kernel=gaussian 
+## - Fold05: kmax=10, distance=3, kernel=gaussian 
+## + Fold06: kmax= 1, distance=1, kernel=gaussian 
+## - Fold06: kmax= 1, distance=1, kernel=gaussian 
+## + Fold06: kmax= 2, distance=1, kernel=gaussian 
+## - Fold06: kmax= 2, distance=1, kernel=gaussian 
+## + Fold06: kmax= 3, distance=1, kernel=gaussian 
+## - Fold06: kmax= 3, distance=1, kernel=gaussian 
+## + Fold06: kmax= 4, distance=1, kernel=gaussian 
+## - Fold06: kmax= 4, distance=1, kernel=gaussian 
+## + Fold06: kmax= 5, distance=1, kernel=gaussian 
+## - Fold06: kmax= 5, distance=1, kernel=gaussian 
+## + Fold06: kmax= 6, distance=1, kernel=gaussian 
+## - Fold06: kmax= 6, distance=1, kernel=gaussian 
+## + Fold06: kmax= 7, distance=1, kernel=gaussian 
+## - Fold06: kmax= 7, distance=1, kernel=gaussian 
+## + Fold06: kmax= 8, distance=1, kernel=gaussian 
+## - Fold06: kmax= 8, distance=1, kernel=gaussian 
+## + Fold06: kmax= 9, distance=1, kernel=gaussian 
+## - Fold06: kmax= 9, distance=1, kernel=gaussian 
+## + Fold06: kmax=10, distance=1, kernel=gaussian 
+## - Fold06: kmax=10, distance=1, kernel=gaussian 
+## + Fold06: kmax= 1, distance=2, kernel=gaussian 
+## - Fold06: kmax= 1, distance=2, kernel=gaussian 
+## + Fold06: kmax= 2, distance=2, kernel=gaussian 
+## - Fold06: kmax= 2, distance=2, kernel=gaussian 
+## + Fold06: kmax= 3, distance=2, kernel=gaussian 
+## - Fold06: kmax= 3, distance=2, kernel=gaussian 
+## + Fold06: kmax= 4, distance=2, kernel=gaussian 
+## - Fold06: kmax= 4, distance=2, kernel=gaussian 
+## + Fold06: kmax= 5, distance=2, kernel=gaussian 
+## - Fold06: kmax= 5, distance=2, kernel=gaussian 
+## + Fold06: kmax= 6, distance=2, kernel=gaussian 
+## - Fold06: kmax= 6, distance=2, kernel=gaussian 
+## + Fold06: kmax= 7, distance=2, kernel=gaussian 
+## - Fold06: kmax= 7, distance=2, kernel=gaussian 
+## + Fold06: kmax= 8, distance=2, kernel=gaussian 
+## - Fold06: kmax= 8, distance=2, kernel=gaussian 
+## + Fold06: kmax= 9, distance=2, kernel=gaussian 
+## - Fold06: kmax= 9, distance=2, kernel=gaussian 
+## + Fold06: kmax=10, distance=2, kernel=gaussian 
+## - Fold06: kmax=10, distance=2, kernel=gaussian 
+## + Fold06: kmax= 1, distance=3, kernel=gaussian 
+## - Fold06: kmax= 1, distance=3, kernel=gaussian 
+## + Fold06: kmax= 2, distance=3, kernel=gaussian 
+## - Fold06: kmax= 2, distance=3, kernel=gaussian 
+## + Fold06: kmax= 3, distance=3, kernel=gaussian 
+## - Fold06: kmax= 3, distance=3, kernel=gaussian 
+## + Fold06: kmax= 4, distance=3, kernel=gaussian 
+## - Fold06: kmax= 4, distance=3, kernel=gaussian 
+## + Fold06: kmax= 5, distance=3, kernel=gaussian 
+## - Fold06: kmax= 5, distance=3, kernel=gaussian 
+## + Fold06: kmax= 6, distance=3, kernel=gaussian 
+## - Fold06: kmax= 6, distance=3, kernel=gaussian 
+## + Fold06: kmax= 7, distance=3, kernel=gaussian 
+## - Fold06: kmax= 7, distance=3, kernel=gaussian 
+## + Fold06: kmax= 8, distance=3, kernel=gaussian 
+## - Fold06: kmax= 8, distance=3, kernel=gaussian 
+## + Fold06: kmax= 9, distance=3, kernel=gaussian 
+## - Fold06: kmax= 9, distance=3, kernel=gaussian 
+## + Fold06: kmax=10, distance=3, kernel=gaussian 
+## - Fold06: kmax=10, distance=3, kernel=gaussian 
+## + Fold07: kmax= 1, distance=1, kernel=gaussian 
+## - Fold07: kmax= 1, distance=1, kernel=gaussian 
+## + Fold07: kmax= 2, distance=1, kernel=gaussian 
+## - Fold07: kmax= 2, distance=1, kernel=gaussian 
+## + Fold07: kmax= 3, distance=1, kernel=gaussian 
+## - Fold07: kmax= 3, distance=1, kernel=gaussian 
+## + Fold07: kmax= 4, distance=1, kernel=gaussian 
+## - Fold07: kmax= 4, distance=1, kernel=gaussian 
+## + Fold07: kmax= 5, distance=1, kernel=gaussian 
+## - Fold07: kmax= 5, distance=1, kernel=gaussian 
+## + Fold07: kmax= 6, distance=1, kernel=gaussian 
+## - Fold07: kmax= 6, distance=1, kernel=gaussian 
+## + Fold07: kmax= 7, distance=1, kernel=gaussian 
+## - Fold07: kmax= 7, distance=1, kernel=gaussian 
+## + Fold07: kmax= 8, distance=1, kernel=gaussian 
+## - Fold07: kmax= 8, distance=1, kernel=gaussian 
+## + Fold07: kmax= 9, distance=1, kernel=gaussian 
+## - Fold07: kmax= 9, distance=1, kernel=gaussian 
+## + Fold07: kmax=10, distance=1, kernel=gaussian 
+## - Fold07: kmax=10, distance=1, kernel=gaussian 
+## + Fold07: kmax= 1, distance=2, kernel=gaussian 
+## - Fold07: kmax= 1, distance=2, kernel=gaussian 
+## + Fold07: kmax= 2, distance=2, kernel=gaussian 
+## - Fold07: kmax= 2, distance=2, kernel=gaussian 
+## + Fold07: kmax= 3, distance=2, kernel=gaussian 
+## - Fold07: kmax= 3, distance=2, kernel=gaussian 
+## + Fold07: kmax= 4, distance=2, kernel=gaussian 
+## - Fold07: kmax= 4, distance=2, kernel=gaussian 
+## + Fold07: kmax= 5, distance=2, kernel=gaussian 
+## - Fold07: kmax= 5, distance=2, kernel=gaussian 
+## + Fold07: kmax= 6, distance=2, kernel=gaussian 
+## - Fold07: kmax= 6, distance=2, kernel=gaussian 
+## + Fold07: kmax= 7, distance=2, kernel=gaussian 
+## - Fold07: kmax= 7, distance=2, kernel=gaussian 
+## + Fold07: kmax= 8, distance=2, kernel=gaussian 
+## - Fold07: kmax= 8, distance=2, kernel=gaussian 
+## + Fold07: kmax= 9, distance=2, kernel=gaussian 
+## - Fold07: kmax= 9, distance=2, kernel=gaussian 
+## + Fold07: kmax=10, distance=2, kernel=gaussian 
+## - Fold07: kmax=10, distance=2, kernel=gaussian 
+## + Fold07: kmax= 1, distance=3, kernel=gaussian 
+## - Fold07: kmax= 1, distance=3, kernel=gaussian 
+## + Fold07: kmax= 2, distance=3, kernel=gaussian 
+## - Fold07: kmax= 2, distance=3, kernel=gaussian 
+## + Fold07: kmax= 3, distance=3, kernel=gaussian 
+## - Fold07: kmax= 3, distance=3, kernel=gaussian 
+## + Fold07: kmax= 4, distance=3, kernel=gaussian 
+## - Fold07: kmax= 4, distance=3, kernel=gaussian 
+## + Fold07: kmax= 5, distance=3, kernel=gaussian 
+## - Fold07: kmax= 5, distance=3, kernel=gaussian 
+## + Fold07: kmax= 6, distance=3, kernel=gaussian 
+## - Fold07: kmax= 6, distance=3, kernel=gaussian 
+## + Fold07: kmax= 7, distance=3, kernel=gaussian 
+## - Fold07: kmax= 7, distance=3, kernel=gaussian 
+## + Fold07: kmax= 8, distance=3, kernel=gaussian 
+## - Fold07: kmax= 8, distance=3, kernel=gaussian 
+## + Fold07: kmax= 9, distance=3, kernel=gaussian 
+## - Fold07: kmax= 9, distance=3, kernel=gaussian 
+## + Fold07: kmax=10, distance=3, kernel=gaussian 
+## - Fold07: kmax=10, distance=3, kernel=gaussian 
+## + Fold08: kmax= 1, distance=1, kernel=gaussian 
+## - Fold08: kmax= 1, distance=1, kernel=gaussian 
+## + Fold08: kmax= 2, distance=1, kernel=gaussian 
+## - Fold08: kmax= 2, distance=1, kernel=gaussian 
+## + Fold08: kmax= 3, distance=1, kernel=gaussian 
+## - Fold08: kmax= 3, distance=1, kernel=gaussian 
+## + Fold08: kmax= 4, distance=1, kernel=gaussian 
+## - Fold08: kmax= 4, distance=1, kernel=gaussian 
+## + Fold08: kmax= 5, distance=1, kernel=gaussian 
+## - Fold08: kmax= 5, distance=1, kernel=gaussian 
+## + Fold08: kmax= 6, distance=1, kernel=gaussian 
+## - Fold08: kmax= 6, distance=1, kernel=gaussian 
+## + Fold08: kmax= 7, distance=1, kernel=gaussian 
+## - Fold08: kmax= 7, distance=1, kernel=gaussian 
+## + Fold08: kmax= 8, distance=1, kernel=gaussian 
+## - Fold08: kmax= 8, distance=1, kernel=gaussian 
+## + Fold08: kmax= 9, distance=1, kernel=gaussian 
+## - Fold08: kmax= 9, distance=1, kernel=gaussian 
+## + Fold08: kmax=10, distance=1, kernel=gaussian 
+## - Fold08: kmax=10, distance=1, kernel=gaussian 
+## + Fold08: kmax= 1, distance=2, kernel=gaussian 
+## - Fold08: kmax= 1, distance=2, kernel=gaussian 
+## + Fold08: kmax= 2, distance=2, kernel=gaussian 
+## - Fold08: kmax= 2, distance=2, kernel=gaussian 
+## + Fold08: kmax= 3, distance=2, kernel=gaussian 
+## - Fold08: kmax= 3, distance=2, kernel=gaussian 
+## + Fold08: kmax= 4, distance=2, kernel=gaussian 
+## - Fold08: kmax= 4, distance=2, kernel=gaussian 
+## + Fold08: kmax= 5, distance=2, kernel=gaussian 
+## - Fold08: kmax= 5, distance=2, kernel=gaussian 
+## + Fold08: kmax= 6, distance=2, kernel=gaussian 
+## - Fold08: kmax= 6, distance=2, kernel=gaussian 
+## + Fold08: kmax= 7, distance=2, kernel=gaussian 
+## - Fold08: kmax= 7, distance=2, kernel=gaussian 
+## + Fold08: kmax= 8, distance=2, kernel=gaussian 
+## - Fold08: kmax= 8, distance=2, kernel=gaussian 
+## + Fold08: kmax= 9, distance=2, kernel=gaussian 
+## - Fold08: kmax= 9, distance=2, kernel=gaussian 
+## + Fold08: kmax=10, distance=2, kernel=gaussian 
+## - Fold08: kmax=10, distance=2, kernel=gaussian 
+## + Fold08: kmax= 1, distance=3, kernel=gaussian 
+## - Fold08: kmax= 1, distance=3, kernel=gaussian 
+## + Fold08: kmax= 2, distance=3, kernel=gaussian 
+## - Fold08: kmax= 2, distance=3, kernel=gaussian 
+## + Fold08: kmax= 3, distance=3, kernel=gaussian 
+## - Fold08: kmax= 3, distance=3, kernel=gaussian 
+## + Fold08: kmax= 4, distance=3, kernel=gaussian 
+## - Fold08: kmax= 4, distance=3, kernel=gaussian 
+## + Fold08: kmax= 5, distance=3, kernel=gaussian 
+## - Fold08: kmax= 5, distance=3, kernel=gaussian 
+## + Fold08: kmax= 6, distance=3, kernel=gaussian 
+## - Fold08: kmax= 6, distance=3, kernel=gaussian 
+## + Fold08: kmax= 7, distance=3, kernel=gaussian 
+## - Fold08: kmax= 7, distance=3, kernel=gaussian 
+## + Fold08: kmax= 8, distance=3, kernel=gaussian 
+## - Fold08: kmax= 8, distance=3, kernel=gaussian 
+## + Fold08: kmax= 9, distance=3, kernel=gaussian 
+## - Fold08: kmax= 9, distance=3, kernel=gaussian 
+## + Fold08: kmax=10, distance=3, kernel=gaussian 
+## - Fold08: kmax=10, distance=3, kernel=gaussian 
+## + Fold09: kmax= 1, distance=1, kernel=gaussian 
+## - Fold09: kmax= 1, distance=1, kernel=gaussian 
+## + Fold09: kmax= 2, distance=1, kernel=gaussian 
+## - Fold09: kmax= 2, distance=1, kernel=gaussian 
+## + Fold09: kmax= 3, distance=1, kernel=gaussian 
+## - Fold09: kmax= 3, distance=1, kernel=gaussian 
+## + Fold09: kmax= 4, distance=1, kernel=gaussian 
+## - Fold09: kmax= 4, distance=1, kernel=gaussian 
+## + Fold09: kmax= 5, distance=1, kernel=gaussian 
+## - Fold09: kmax= 5, distance=1, kernel=gaussian 
+## + Fold09: kmax= 6, distance=1, kernel=gaussian 
+## - Fold09: kmax= 6, distance=1, kernel=gaussian 
+## + Fold09: kmax= 7, distance=1, kernel=gaussian 
+## - Fold09: kmax= 7, distance=1, kernel=gaussian 
+## + Fold09: kmax= 8, distance=1, kernel=gaussian 
+## - Fold09: kmax= 8, distance=1, kernel=gaussian 
+## + Fold09: kmax= 9, distance=1, kernel=gaussian 
+## - Fold09: kmax= 9, distance=1, kernel=gaussian 
+## + Fold09: kmax=10, distance=1, kernel=gaussian 
+## - Fold09: kmax=10, distance=1, kernel=gaussian 
+## + Fold09: kmax= 1, distance=2, kernel=gaussian 
+## - Fold09: kmax= 1, distance=2, kernel=gaussian 
+## + Fold09: kmax= 2, distance=2, kernel=gaussian 
+## - Fold09: kmax= 2, distance=2, kernel=gaussian 
+## + Fold09: kmax= 3, distance=2, kernel=gaussian 
+## - Fold09: kmax= 3, distance=2, kernel=gaussian 
+## + Fold09: kmax= 4, distance=2, kernel=gaussian 
+## - Fold09: kmax= 4, distance=2, kernel=gaussian 
+## + Fold09: kmax= 5, distance=2, kernel=gaussian 
+## - Fold09: kmax= 5, distance=2, kernel=gaussian 
+## + Fold09: kmax= 6, distance=2, kernel=gaussian 
+## - Fold09: kmax= 6, distance=2, kernel=gaussian 
+## + Fold09: kmax= 7, distance=2, kernel=gaussian 
+## - Fold09: kmax= 7, distance=2, kernel=gaussian 
+## + Fold09: kmax= 8, distance=2, kernel=gaussian 
+## - Fold09: kmax= 8, distance=2, kernel=gaussian 
+## + Fold09: kmax= 9, distance=2, kernel=gaussian 
+## - Fold09: kmax= 9, distance=2, kernel=gaussian 
+## + Fold09: kmax=10, distance=2, kernel=gaussian 
+## - Fold09: kmax=10, distance=2, kernel=gaussian 
+## + Fold09: kmax= 1, distance=3, kernel=gaussian 
+## - Fold09: kmax= 1, distance=3, kernel=gaussian 
+## + Fold09: kmax= 2, distance=3, kernel=gaussian 
+## - Fold09: kmax= 2, distance=3, kernel=gaussian 
+## + Fold09: kmax= 3, distance=3, kernel=gaussian 
+## - Fold09: kmax= 3, distance=3, kernel=gaussian 
+## + Fold09: kmax= 4, distance=3, kernel=gaussian 
+## - Fold09: kmax= 4, distance=3, kernel=gaussian 
+## + Fold09: kmax= 5, distance=3, kernel=gaussian 
+## - Fold09: kmax= 5, distance=3, kernel=gaussian 
+## + Fold09: kmax= 6, distance=3, kernel=gaussian 
+## - Fold09: kmax= 6, distance=3, kernel=gaussian 
+## + Fold09: kmax= 7, distance=3, kernel=gaussian 
+## - Fold09: kmax= 7, distance=3, kernel=gaussian 
+## + Fold09: kmax= 8, distance=3, kernel=gaussian 
+## - Fold09: kmax= 8, distance=3, kernel=gaussian 
+## + Fold09: kmax= 9, distance=3, kernel=gaussian 
+## - Fold09: kmax= 9, distance=3, kernel=gaussian 
+## + Fold09: kmax=10, distance=3, kernel=gaussian 
+## - Fold09: kmax=10, distance=3, kernel=gaussian 
+## + Fold10: kmax= 1, distance=1, kernel=gaussian 
+## - Fold10: kmax= 1, distance=1, kernel=gaussian 
+## + Fold10: kmax= 2, distance=1, kernel=gaussian 
+## - Fold10: kmax= 2, distance=1, kernel=gaussian 
+## + Fold10: kmax= 3, distance=1, kernel=gaussian 
+## - Fold10: kmax= 3, distance=1, kernel=gaussian 
+## + Fold10: kmax= 4, distance=1, kernel=gaussian 
+## - Fold10: kmax= 4, distance=1, kernel=gaussian 
+## + Fold10: kmax= 5, distance=1, kernel=gaussian 
+## - Fold10: kmax= 5, distance=1, kernel=gaussian 
+## + Fold10: kmax= 6, distance=1, kernel=gaussian 
+## - Fold10: kmax= 6, distance=1, kernel=gaussian 
+## + Fold10: kmax= 7, distance=1, kernel=gaussian 
+## - Fold10: kmax= 7, distance=1, kernel=gaussian 
+## + Fold10: kmax= 8, distance=1, kernel=gaussian 
+## - Fold10: kmax= 8, distance=1, kernel=gaussian 
+## + Fold10: kmax= 9, distance=1, kernel=gaussian 
+## - Fold10: kmax= 9, distance=1, kernel=gaussian 
+## + Fold10: kmax=10, distance=1, kernel=gaussian 
+## - Fold10: kmax=10, distance=1, kernel=gaussian 
+## + Fold10: kmax= 1, distance=2, kernel=gaussian 
+## - Fold10: kmax= 1, distance=2, kernel=gaussian 
+## + Fold10: kmax= 2, distance=2, kernel=gaussian 
+## - Fold10: kmax= 2, distance=2, kernel=gaussian 
+## + Fold10: kmax= 3, distance=2, kernel=gaussian 
+## - Fold10: kmax= 3, distance=2, kernel=gaussian 
+## + Fold10: kmax= 4, distance=2, kernel=gaussian 
+## - Fold10: kmax= 4, distance=2, kernel=gaussian 
+## + Fold10: kmax= 5, distance=2, kernel=gaussian 
+## - Fold10: kmax= 5, distance=2, kernel=gaussian 
+## + Fold10: kmax= 6, distance=2, kernel=gaussian 
+## - Fold10: kmax= 6, distance=2, kernel=gaussian 
+## + Fold10: kmax= 7, distance=2, kernel=gaussian 
+## - Fold10: kmax= 7, distance=2, kernel=gaussian 
+## + Fold10: kmax= 8, distance=2, kernel=gaussian 
+## - Fold10: kmax= 8, distance=2, kernel=gaussian 
+## + Fold10: kmax= 9, distance=2, kernel=gaussian 
+## - Fold10: kmax= 9, distance=2, kernel=gaussian 
+## + Fold10: kmax=10, distance=2, kernel=gaussian 
+## - Fold10: kmax=10, distance=2, kernel=gaussian 
+## + Fold10: kmax= 1, distance=3, kernel=gaussian 
+## - Fold10: kmax= 1, distance=3, kernel=gaussian 
+## + Fold10: kmax= 2, distance=3, kernel=gaussian 
+## - Fold10: kmax= 2, distance=3, kernel=gaussian 
+## + Fold10: kmax= 3, distance=3, kernel=gaussian 
+## - Fold10: kmax= 3, distance=3, kernel=gaussian 
+## + Fold10: kmax= 4, distance=3, kernel=gaussian 
+## - Fold10: kmax= 4, distance=3, kernel=gaussian 
+## + Fold10: kmax= 5, distance=3, kernel=gaussian 
+## - Fold10: kmax= 5, distance=3, kernel=gaussian 
+## + Fold10: kmax= 6, distance=3, kernel=gaussian 
+## - Fold10: kmax= 6, distance=3, kernel=gaussian 
+## + Fold10: kmax= 7, distance=3, kernel=gaussian 
+## - Fold10: kmax= 7, distance=3, kernel=gaussian 
+## + Fold10: kmax= 8, distance=3, kernel=gaussian 
+## - Fold10: kmax= 8, distance=3, kernel=gaussian 
+## + Fold10: kmax= 9, distance=3, kernel=gaussian 
+## - Fold10: kmax= 9, distance=3, kernel=gaussian 
+## + Fold10: kmax=10, distance=3, kernel=gaussian 
+## - Fold10: kmax=10, distance=3, kernel=gaussian 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting kmax = 10, distance = 3, kernel = gaussian on full training set</code></pre>
+<pre class="r"><code># Determine the best K to use for KNN ####
+# 10-fold cross-validation to choose the value of K
+# minimizes the mean squared error (MSE)
+best_k &lt;- model$bestTune$kmax</code></pre>
+<p>KNN classification for attrition</p>
+<pre class="r"><code># KNN Test One ####
+model3 &lt;- knn(train_att[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
+    test_att[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
+    train_att$Attrition, 
+    k = best_k, prob = T)</code></pre>
+<p>Validate KNN Model classifying for attrition</p>
+<pre class="r"><code>confusionMatrix(model3, test_att$Attrition)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction Left Stayed
+##     Left      0      2
+##     Stayed   42    217
+##                                           
+##                Accuracy : 0.8314          
+##                  95% CI : (0.7804, 0.8748)
+##     No Information Rate : 0.8391          
+##     P-Value [Acc &gt; NIR] : 0.6688          
+##                                           
+##                   Kappa : -0.0148         
+##                                           
+##  Mcnemar&#39;s Test P-Value : 4.116e-09       
+##                                           
+##             Sensitivity : 0.000000        
+##             Specificity : 0.990868        
+##          Pos Pred Value : 0.000000        
+##          Neg Pred Value : 0.837838        
+##              Prevalence : 0.160920        
+##          Detection Rate : 0.000000        
+##    Detection Prevalence : 0.007663        
+##       Balanced Accuracy : 0.495434        
+##                                           
+##        &#39;Positive&#39; Class : Left            
+## </code></pre>
+<p>Cross Validation | Leave One Out Test</p>
+<pre class="r"><code># Leave One Out KNN ####
+model4 &lt;- knn.cv(attrition[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)],
+       attrition$Attrition,
+       k = best_k)
+
+confusionMatrix(attrition$Attrition, model4) # works</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction Left Stayed
+##     Left      4    136
+##     Stayed   10    720
+##                                           
+##                Accuracy : 0.8322          
+##                  95% CI : (0.8057, 0.8564)
+##     No Information Rate : 0.9839          
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0.0234          
+##                                           
+##  Mcnemar&#39;s Test P-Value : &lt;2e-16          
+##                                           
+##             Sensitivity : 0.285714        
+##             Specificity : 0.841121        
+##          Pos Pred Value : 0.028571        
+##          Neg Pred Value : 0.986301        
+##              Prevalence : 0.016092        
+##          Detection Rate : 0.004598        
+##    Detection Prevalence : 0.160920        
+##       Balanced Accuracy : 0.563418        
+##                                           
+##        &#39;Positive&#39; Class : Left            
+## </code></pre>
+<p>Increase the threshold option. Which only gives me a certain limit
+with the results off KNN Confusion Matrix Sensitvity and Specificity</p>
+<p>With attrition left being the postive class for validation Accuracy
+will be sacrificed for Sensitivity and Specificity match</p>
+<pre class="r"><code># Threshold KNN ####
+
+# Get probs from the model
+probs = ifelse(model3 == &quot;Left&quot;,attributes(model3)$prob, 1- attributes(model3)$prob)
+
+# New Probability class where the threesold of left will be changed based on the prob value
+# From the main dataset 140 left and 730 stayed
+# 140 / 730 = .19178
+NewModel = ifelse(probs &gt; .19178, &quot;Left&quot;, &quot;Stayed&quot;)
+
+# Validate the new model
+CM = confusionMatrix(table(NewModel,test_att$Attrition))
+
+CM</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##         
+## NewModel Left Stayed
+##   Left     28    107
+##   Stayed   14    112
+##                                           
+##                Accuracy : 0.5364          
+##                  95% CI : (0.4739, 0.5981)
+##     No Information Rate : 0.8391          
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0.094           
+##                                           
+##  Mcnemar&#39;s Test P-Value : &lt;2e-16          
+##                                           
+##             Sensitivity : 0.6667          
+##             Specificity : 0.5114          
+##          Pos Pred Value : 0.2074          
+##          Neg Pred Value : 0.8889          
+##              Prevalence : 0.1609          
+##          Detection Rate : 0.1073          
+##    Detection Prevalence : 0.5172          
+##       Balanced Accuracy : 0.5890          
+##                                           
+##        &#39;Positive&#39; Class : Left            
+## </code></pre>
+<p>Oversampling KNN I actually tested this first with Naive Bayes and
+had good results.</p>
+<pre class="r"><code># Oversampling #### 
+
+## Original Value | 36 objects &quot;columns&quot;
+left = train_att %&gt;% filter(Attrition == &quot;Left&quot;)
+#dim(left)
+
+# Add more &quot;Left&quot; Values | 36 objects &quot;columns&quot; | Oversample
+leftOver = rbind(left,left[sample(seq(1,50,1),(356-50),replace = TRUE),])
+#dim(leftOver)
+
+# Add the over sample of fraud back to the full dataset
+OverSamp1 = rbind(train_att %&gt;% filter(Attrition == &quot;Stayed&quot;), leftOver)
+#dim(OverSamp) # use this value
+
+# Check the Oversampling split
+sp_left = OverSamp1 %&gt;% filter(Attrition == &quot;Left&quot;)
+#dim(sp_left)
+
+sp_stay = OverSamp1 %&gt;% filter(Attrition == &quot;Stayed&quot;)
+#dim(sp_stay)
+
+summary(OverSamp1$Attrition)</code></pre>
+<pre><code>##   Left Stayed 
+##    404    511</code></pre>
+<p>KNN Oversampling classification for attrition</p>
+<pre class="r"><code># KNN Test One ####
+model_ov &lt;- knn(OverSamp1[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
+    test_att[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
+    OverSamp1$Attrition, 
+    k = best_k, prob = T)
+
+
+confusionMatrix(model_ov, test_att$Attrition)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction Left Stayed
+##     Left     28    101
+##     Stayed   14    118
+##                                           
+##                Accuracy : 0.5594          
+##                  95% CI : (0.4969, 0.6206)
+##     No Information Rate : 0.8391          
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0.1119          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 1.061e-15       
+##                                           
+##             Sensitivity : 0.6667          
+##             Specificity : 0.5388          
+##          Pos Pred Value : 0.2171          
+##          Neg Pred Value : 0.8939          
+##              Prevalence : 0.1609          
+##          Detection Rate : 0.1073          
+##    Detection Prevalence : 0.4943          
+##       Balanced Accuracy : 0.6027          
+##                                           
+##        &#39;Positive&#39; Class : Left            
+## </code></pre>
+</div>
+<div id="naive-bayes-review" class="section level2">
+<h2>Naive Bayes Review</h2>
+<p>Naive Bayes Attrition Model</p>
+<pre class="r"><code>nb_mod = naiveBayes(train_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)],
+                   train_att$Attrition, 
+                   labels = c(&quot;Left&quot;, &quot;Stayed&quot;))
+
+# -------------------------------------------
+
+# nbmod = naiveBayes(Attrition~., data = train_att) 
+# THis way cause a bunch of warning messages to appear when you validate with confussion Matrix</code></pre>
+<p>Naive Bayes Validation of Attrition Model</p>
+<pre class="r"><code>nb_CM = confusionMatrix(table(factor(test_att$Attrition, 
+                                  labels = c(&quot;Left&quot;, &quot;Stayed&quot;)),
+                           predict(nb_mod, test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)])))
+
+nb_CM</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##         
+##          Left Stayed
+##   Left      0     42
+##   Stayed    0    219
+##                                           
+##                Accuracy : 0.8391          
+##                  95% CI : (0.7888, 0.8815)
+##     No Information Rate : 1               
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0               
+##                                           
+##  Mcnemar&#39;s Test P-Value : 2.509e-10       
+##                                           
+##             Sensitivity :     NA          
+##             Specificity : 0.8391          
+##          Pos Pred Value :     NA          
+##          Neg Pred Value :     NA          
+##              Prevalence : 0.0000          
+##          Detection Rate : 0.0000          
+##    Detection Prevalence : 0.1609          
+##       Balanced Accuracy :     NA          
+##                                           
+##        &#39;Positive&#39; Class : Left            
+## </code></pre>
+<pre class="r"><code>summary(train_att$Attrition)</code></pre>
+<pre><code>##   Left Stayed 
+##     98    511</code></pre>
+<pre class="r"><code># left 99 | Stayed 510
+# 243 | 366</code></pre>
+<p>Oversampling Data</p>
+<pre class="r"><code># Oversampling Naive Bayes #### 
+
+## Original Value | 36 objects &quot;columns&quot;
+left = train_att %&gt;% filter(Attrition == &quot;Left&quot;)
+#dim(left)
+
+# Add more &quot;Left&quot; Values | 36 objects &quot;columns&quot; | Oversample
+leftOver = rbind(left,left[sample(seq(1,98,1),(200-98),replace = TRUE),])
+#dim(leftOver)
+
+# Add the over sample of fraud back to the full dataset
+OverSamp = rbind(train_att %&gt;% filter(Attrition == &quot;Stayed&quot;), leftOver)
+#dim(OverSamp) # use this value
+
+# Check the Oversampling split
+sp_left = OverSamp %&gt;% filter(Attrition == &quot;Left&quot;)
+#dim(sp_left)
+
+sp_stay = OverSamp %&gt;% filter(Attrition == &quot;Stayed&quot;)
+#dim(sp_stay)
+
+summary(OverSamp$Attrition)</code></pre>
+<pre><code>##   Left Stayed 
+##    200    511</code></pre>
+<pre class="r"><code>summary(train_att$Attrition) # Original Value</code></pre>
+<pre><code>##   Left Stayed 
+##     98    511</code></pre>
+<pre class="r"><code>summary(OverSamp$Attrition) # Oversample Value</code></pre>
+<pre><code>##   Left Stayed 
+##    200    511</code></pre>
+<p>Oversampling Naive Bayes Attrition Model</p>
+<pre class="r"><code>nb_mod1 = naiveBayes(OverSamp[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)],
+                   OverSamp$Attrition, 
+                   labels = c(&quot;Left&quot;, &quot;Stayed&quot;))
+
+# -------------------------------------------
+
+nb_CM1 = confusionMatrix(table(factor(test_att$Attrition, 
+                                  labels = c(&quot;Left&quot;, &quot;Stayed&quot;)),
+                           predict(nb_mod1, test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)])))
+
+nb_CM1</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##         
+##          Left Stayed
+##   Left      7     35
+##   Stayed    9    210
+##                                           
+##                Accuracy : 0.8314          
+##                  95% CI : (0.7804, 0.8748)
+##     No Information Rate : 0.9387          
+##     P-Value [Acc &gt; NIR] : 1.000000        
+##                                           
+##                   Kappa : 0.1675          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 0.000164        
+##                                           
+##             Sensitivity : 0.43750         
+##             Specificity : 0.85714         
+##          Pos Pred Value : 0.16667         
+##          Neg Pred Value : 0.95890         
+##              Prevalence : 0.06130         
+##          Detection Rate : 0.02682         
+##    Detection Prevalence : 0.16092         
+##       Balanced Accuracy : 0.64732         
+##                                           
+##        &#39;Positive&#39; Class : Left            
+## </code></pre>
+<pre class="r"><code>## Find average accuracy etc. of 100 train / test splits
+AccHolder = numeric(100)
+SensHolder = numeric(100)
+SpecHolder = numeric(100)
+
+for (seed in 1:100)
+{
+    set.seed(seed)
+      ## Split Data 70-30 | Attrition ####
+    index &lt;- sample(seq(1:length(attrition$Attrition)),round(.7*length(attrition$Attrition)))
+    
+    train_att &lt;- attrition[index, ]
+    
+    test_att &lt;- attrition[-index, ]
+    
+    nb_mod &lt;- naiveBayes(OverSamp[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)],
+                       OverSamp$Attrition, 
+                       labels = c(&quot;Left&quot;, &quot;Stayed&quot;))
+    
+    CM &lt;- confusionMatrix(table(factor(test_att$Attrition, 
+                                      labels = c(&quot;Left&quot;, &quot;Stayed&quot;)),
+                               predict(nb_mod1, test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)])))
+    
+    AccHolder[seed] = CM$overall[1]
+    SensHolder[seed] = CM$byClass[1]
+    SpecHolder[seed] = CM$byClass[2]
+}
+
+mean(AccHolder)</code></pre>
+<pre><code>## [1] 0.8133716</code></pre>
+<pre class="r"><code>#Standard Error of the Mean
+sd(AccHolder)/sqrt(100) </code></pre>
+<pre><code>## [1] 0.002036368</code></pre>
+<pre class="r"><code>mean(SensHolder)</code></pre>
+<pre><code>## [1] 0.3445631</code></pre>
+<pre class="r"><code>#Standard Error of the Mean
+sd(SensHolder)/sqrt(100) </code></pre>
+<pre><code>## [1] 0.008642854</code></pre>
+<pre class="r"><code>mean(SpecHolder)</code></pre>
+<pre><code>## [1] 0.855562</code></pre>
+<pre class="r"><code>#Standard Error of the Mean
+sd(SensHolder)/sqrt(100)</code></pre>
+<pre><code>## [1] 0.008642854</code></pre>
+</div>
+<div id="six-step-test" class="section level2">
+<h2>Six Step Test</h2>
+<pre class="r"><code># T TEST ####
+#t.test(model3, predicted_values3, paired = TRUE)
+# Error in complete.cases(x, y) : not all arguments have the same length</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
