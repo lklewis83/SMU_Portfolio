@@ -322,6 +322,16 @@ $(document).ready(function () {
 attrition &lt;- read.csv(&quot;CaseStudy2-data.csv&quot;, header = T)
 income &lt;- read.csv(&quot;CaseStudy2CompSetNoIncome1.csv&quot;, header = T)
 no_att &lt;- read.csv(&quot;CaseStudy2CompSetNoAttrition.csv&quot;, header = T)</code></pre>
+<div id="aws-data-bucket-pull-and-test" class="section level2">
+<h2>AWS Data Bucket Pull and Test</h2>
+<p>Data will not always be available so this file will not run off the
+AWS datasets</p>
+<pre class="r"><code>attrition_aws &lt;- s3read_using(FUN = read.csv,                          
+                          bucket = &quot;ddsproject1&quot;, 
+                          object = &quot;CaseStudy2-data.csv&quot;) 
+
+
+str(attrition_aws)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    870 obs. of  36 variables:
 ##  $ ID                      : int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ Age                     : int  32 40 35 32 24 27 41 37 34 34 ...
@@ -359,6 +369,14 @@ no_att &lt;- read.csv(&quot;CaseStudy2CompSetNoAttrition.csv&quot;, header = T)<
 ##  $ YearsInCurrentRole      : int  2 7 2 10 3 7 2 0 1 2 ...
 ##  $ YearsSinceLastPromotion : int  0 4 2 5 1 1 0 0 0 7 ...
 ##  $ YearsWithCurrManager    : int  3 9 2 7 3 7 3 0 0 7 ...</code></pre>
+<pre class="r"><code>#noAtt_aws &lt;- s3read_using(FUN = read.csv, bucket = &quot;ddsproject1&quot;, object = &quot;CaseStudy2CompSetNoAttrition.csv&quot;) 
+
+
+#str(noAtt_aws)</code></pre>
+<pre class="r"><code>#income_aws &lt;- s3read_using(FUN = read.csv, bucket = &quot;ddsproject1&quot;, object = &quot;CaseStudy2CompSetNoIncome.csv&quot;) 
+
+
+#str(income_aws)</code></pre>
 <pre class="r"><code># CLEAN DATA ####
 ## REPLACE attrition with new values ####
 attrition$Attrition &lt;- gsub(&quot;No&quot;, &quot;Stayed&quot;, attrition$Attrition)
@@ -367,10 +385,38 @@ attrition$Attrition &lt;- gsub(&quot;Yes&quot;, &quot;Left&quot;, attrition$Attr
 
 ## FORCE COLORS FOR Attrition ####
 colors &lt;- c(&quot;Stayed&quot; = &quot;green&quot;, &quot;Left&quot; = &quot;red&quot;)</code></pre>
+</div>
 <div id="intro" class="section level2">
 <h2>INTRO</h2>
 <p>This document will be used to review the predictions of KNN, and
 Naive Bayes. And then perform a six step test.</p>
+</div>
+<div id="predict-missing-values" class="section level2">
+<h2>Predict Missing Values</h2>
+<p>Monthly Income Predict Missing Values</p>
+<pre class="r"><code># Obtain the Mean MonthlyIncome and save to a dataset
+mean_income &lt;- aggregate(MonthlyIncome ~ Attrition + JobRole + Age, data = attrition, FUN = mean)
+
+
+# Save the mean monthly income values to a CSV file
+write.csv(mean_income, &quot;MeanIncome.csv&quot;)</code></pre>
+<p>Attrition Prediction for Missing values</p>
+<pre class="r"><code># Define a custom function to calculate the mode
+mode_function &lt;- function(x) 
+  {
+  table_x &lt;- table(x)
+  mode_x &lt;- names(table_x)[which.max(table_x)]
+  return(mode_x)
+  }
+
+
+# Obtain the Mode Attrition and save to a dataset
+mode_Attrition &lt;- aggregate(Attrition ~ Department + JobRole + Age, data = attrition, FUN = mode_function)
+
+
+# Save the mean monthly income values to a CSV file
+write.csv(mode_Attrition, &quot;ModeAttrition.csv&quot;)</code></pre>
+<p>Create Train and Test sets</p>
 <pre class="r"><code># CLEAN DATA ####
 ## Create Factor Variables for Classification ####
 income$Attrition = as.factor(income$Attrition)
@@ -1011,7 +1057,7 @@ model &lt;- train(MonthlyIncome ~ JobRole + Attrition,
 ## - Fold10: kmax=10, distance=3, kernel=gaussian 
 ## Aggregating results
 ## Selecting tuning parameters
-## Fitting kmax = 10, distance = 3, kernel = gaussian on full training set</code></pre>
+## Fitting kmax = 10, distance = 1, kernel = gaussian on full training set</code></pre>
 <pre class="r"><code># Determine the best K to use for KNN ####
 # 10-fold cross-validation to choose the value of K
 # minimizes the mean squared error (MSE)

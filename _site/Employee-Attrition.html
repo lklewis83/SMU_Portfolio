@@ -319,14 +319,64 @@ $(document).ready(function () {
 
 
 <pre class="r"><code># CSV IMPORT DATA ####
-attrition &lt;- read.csv(&quot;C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2-data.csv&quot;, header = T)
-income &lt;- read.csv(&quot;C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2CompSetNoIncome1.csv&quot;, header = T)
-no_att &lt;- read.csv(&quot;C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2CompSetNoAttrition.csv&quot;, header = T)</code></pre>
-<pre class="r"><code># AWS IMPORT OF DATA ####
-#Sys.setenv(&quot;AWS_ACCESS_KEY_ID&quot; = &quot;your_access_key_id&quot;,           &quot;AWS_SECRET_ACCESS_KEY&quot; = &quot;your_secret_access_key&quot;)
+attrition &lt;- read.csv(&quot;CaseStudy2-data.csv&quot;, header = T)
+income &lt;- read.csv(&quot;CaseStudy2CompSetNoIncome1.csv&quot;, header = T)
+no_att &lt;- read.csv(&quot;CaseStudy2CompSetNoAttrition.csv&quot;, header = T)</code></pre>
+<div id="aws-data-bucket-pull-and-test" class="section level2">
+<h2>AWS Data Bucket Pull and Test</h2>
+<p>Data will not always be available so this file will not run off the
+AWS datasets</p>
+<pre class="r"><code>attrition_aws &lt;- s3read_using(FUN = read.csv,                          
+                          bucket = &quot;ddsproject1&quot;, 
+                          object = &quot;CaseStudy2-data.csv&quot;) 
 
-#attrition &lt;- s3read_using(FUN = read.csv,                          bucket = &quot;ddsproject1&quot;,                           object = &quot;CaseStudy2-data.csv&quot;) 
-#str(attrition)</code></pre>
+
+str(attrition_aws)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    870 obs. of  36 variables:
+##  $ ID                      : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Age                     : int  32 40 35 32 24 27 41 37 34 34 ...
+##  $ Attrition               : chr  &quot;No&quot; &quot;No&quot; &quot;No&quot; &quot;No&quot; ...
+##  $ BusinessTravel          : chr  &quot;Travel_Rarely&quot; &quot;Travel_Rarely&quot; &quot;Travel_Frequently&quot; &quot;Travel_Rarely&quot; ...
+##  $ DailyRate               : int  117 1308 200 801 567 294 1283 309 1333 653 ...
+##  $ Department              : chr  &quot;Sales&quot; &quot;Research &amp; Development&quot; &quot;Research &amp; Development&quot; &quot;Sales&quot; ...
+##  $ DistanceFromHome        : int  13 14 18 1 2 10 5 10 10 10 ...
+##  $ Education               : int  4 3 2 4 1 2 5 4 4 4 ...
+##  $ EducationField          : chr  &quot;Life Sciences&quot; &quot;Medical&quot; &quot;Life Sciences&quot; &quot;Marketing&quot; ...
+##  $ EmployeeCount           : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ EmployeeNumber          : int  859 1128 1412 2016 1646 733 1448 1105 1055 1597 ...
+##  $ EnvironmentSatisfaction : int  2 3 3 3 1 4 2 4 3 4 ...
+##  $ Gender                  : chr  &quot;Male&quot; &quot;Male&quot; &quot;Male&quot; &quot;Female&quot; ...
+##  $ HourlyRate              : int  73 44 60 48 32 32 90 88 87 92 ...
+##  $ JobInvolvement          : int  3 2 3 3 3 3 4 2 3 2 ...
+##  $ JobLevel                : int  2 5 3 3 1 3 1 2 1 2 ...
+##  $ JobRole                 : chr  &quot;Sales Executive&quot; &quot;Research Director&quot; &quot;Manufacturing Director&quot; &quot;Sales Executive&quot; ...
+##  $ JobSatisfaction         : int  4 3 4 4 4 1 3 4 3 3 ...
+##  $ MaritalStatus           : chr  &quot;Divorced&quot; &quot;Single&quot; &quot;Single&quot; &quot;Married&quot; ...
+##  $ MonthlyIncome           : int  4403 19626 9362 10422 3760 8793 2127 6694 2220 5063 ...
+##  $ MonthlyRate             : int  9250 17544 19944 24032 17218 4809 5561 24223 18410 15332 ...
+##  $ NumCompaniesWorked      : int  2 1 2 1 1 1 2 2 1 1 ...
+##  $ Over18                  : chr  &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; ...
+##  $ OverTime                : chr  &quot;No&quot; &quot;No&quot; &quot;No&quot; &quot;No&quot; ...
+##  $ PercentSalaryHike       : int  11 14 11 19 13 21 12 14 19 14 ...
+##  $ PerformanceRating       : int  3 3 3 3 3 4 3 3 3 3 ...
+##  $ RelationshipSatisfaction: int  3 1 3 3 3 3 1 3 4 2 ...
+##  $ StandardHours           : int  80 80 80 80 80 80 80 80 80 80 ...
+##  $ StockOptionLevel        : int  1 0 0 2 0 2 0 3 1 1 ...
+##  $ TotalWorkingYears       : int  8 21 10 14 6 9 7 8 1 8 ...
+##  $ TrainingTimesLastYear   : int  3 2 2 3 2 4 5 5 2 3 ...
+##  $ WorkLifeBalance         : int  2 4 3 3 3 2 2 3 3 2 ...
+##  $ YearsAtCompany          : int  5 20 2 14 6 9 4 1 1 8 ...
+##  $ YearsInCurrentRole      : int  2 7 2 10 3 7 2 0 1 2 ...
+##  $ YearsSinceLastPromotion : int  0 4 2 5 1 1 0 0 0 7 ...
+##  $ YearsWithCurrManager    : int  3 9 2 7 3 7 3 0 0 7 ...</code></pre>
+<pre class="r"><code>#noAtt_aws &lt;- s3read_using(FUN = read.csv, bucket = &quot;ddsproject1&quot;, object = &quot;CaseStudy2CompSetNoAttrition.csv&quot;) 
+
+
+#str(noAtt_aws)</code></pre>
+<pre class="r"><code>#income_aws &lt;- s3read_using(FUN = read.csv, bucket = &quot;ddsproject1&quot;, object = &quot;CaseStudy2CompSetNoIncome.csv&quot;) 
+
+
+#str(income_aws)</code></pre>
 <pre class="r"><code># CLEAN DATA ####
 ## REPLACE attrition with new values ####
 attrition$Attrition &lt;- gsub(&quot;No&quot;, &quot;Stayed&quot;, attrition$Attrition)
@@ -335,6 +385,7 @@ attrition$Attrition &lt;- gsub(&quot;Yes&quot;, &quot;Left&quot;, attrition$Attr
 
 ## FORCE COLORS FOR Attrition ####
 colors &lt;- c(&quot;Stayed&quot; = &quot;green&quot;, &quot;Left&quot; = &quot;maroon&quot;)</code></pre>
+</div>
 <div id="intro" class="section level2">
 <h2>INTRO</h2>
 <p>These graphs will be used to highlight Longevity at this company and
@@ -363,7 +414,7 @@ n &lt;- filter(attrition, Attrition == &quot;Left&quot;) %&gt;%
 
 
 grid.arrange(p, n, ncol = 2)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code># LONGEVITY | Department ####
 attrition %&gt;% ggplot(aes(x = YearsAtCompany, y = Department, color = Attrition)) +
   geom_boxplot() +
@@ -371,7 +422,7 @@ attrition %&gt;% ggplot(aes(x = YearsAtCompany, y = Department, color = Attritio
   ylab(&quot;Department&quot;) +
   xlab(&quot;YearsAtCompany&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code># LONGEVITY | Department - Mean Line #### 
 attrition %&gt;% ggplot(aes(x = YearsAtCompany, y = Department, color = Attrition)) +
   geom_point(position = &quot;jitter&quot;) +
@@ -380,7 +431,7 @@ attrition %&gt;% ggplot(aes(x = YearsAtCompany, y = Department, color = Attritio
   ylab(&quot;Department&quot;) +
   xlab(&quot;YearsAtCompany&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>summary(attrition$YearsAtCompany)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   0.000   3.000   5.000   6.962  10.000  40.000</code></pre>
@@ -390,7 +441,7 @@ attrition %&gt;% ggplot(aes(x = YearsAtCompany, y = JobRole, color = Attrition))
   ylab(&quot;JobRole&quot;) +
   xlab(&quot;YearsAtCompany&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <pre class="r"><code># LONGEVITY | Job Role - Mean Line #### 
 attrition %&gt;% ggplot(aes(x = YearsAtCompany, y = JobRole, color = Attrition)) +
   geom_boxplot() +
@@ -399,7 +450,7 @@ attrition %&gt;% ggplot(aes(x = YearsAtCompany, y = JobRole, color = Attrition))
   ylab(&quot;JobRole&quot;) +
   xlab(&quot;YearsAtCompany&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="job-roles-matter" class="section level2">
 <h2>Job Roles Matter</h2>
@@ -411,7 +462,7 @@ attrition %&gt;% ggplot(aes(x = Age, y = Department, color = Attrition)) +
   ylab(&quot;Department&quot;) +
   xlab(&quot;Age&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code># AGE  | Department  - MEAN ####
 attrition %&gt;% ggplot(aes(x = Age, y = Department, color = Attrition)) +
   geom_point(position = &quot;jitter&quot;) +
@@ -420,14 +471,14 @@ attrition %&gt;% ggplot(aes(x = Age, y = Department, color = Attrition)) +
   ylab(&quot;Department&quot;) +
   xlab(&quot;Age&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <pre class="r"><code># AGE - JobRole ####
 attrition %&gt;% ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
   geom_point(position = &quot;jitter&quot;) +
   ylab(&quot;JobRole&quot;) +
   xlab(&quot;Age&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <pre class="r"><code># AGE | JobRole - MEAN ####
 attrition %&gt;% ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
   geom_boxplot() +
@@ -436,7 +487,7 @@ attrition %&gt;% ggplot(aes(x = Age, y = JobRole, color = Attrition)) +
   ylab(&quot;JobRole&quot;) +
   xlab(&quot;Age&quot;) +
   scale_color_manual(values = colors)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <pre class="r"><code>summary(attrition$Age)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   18.00   30.00   35.00   36.83   43.00   60.00</code></pre>
@@ -479,7 +530,7 @@ a &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
   theme(plot.title = element_text(hjust = 0.5)) 
 
 grid.arrange(y, o, a, nrow = 3)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="work-life-balance-review" class="section level2">
 <h2>Work Life Balance Review</h2>
@@ -519,7 +570,7 @@ a &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
   theme(plot.title = element_text(hjust = 0.5)) 
 
 grid.arrange(y, o, a, nrow = 3)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="money-importance-review" class="section level2">
 <h2>Money Importance Review</h2>
@@ -562,7 +613,7 @@ a &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
   theme(plot.title = element_text(hjust = 0.5)) 
 
 grid.arrange(y, o, a, nrow = 3)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="salary-increase-review" class="section level2">
 <h2>Salary Increase Review</h2>
@@ -605,7 +656,7 @@ a &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
   theme(plot.title = element_text(hjust = 0.5)) 
 
 grid.arrange(y, o, a, nrow = 3)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 <div id="years-since-last-promotion-review" class="section level2">
 <h2>Years Since Last Promotion Review</h2>
@@ -648,7 +699,7 @@ a &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
   theme(plot.title = element_text(hjust = 0.5)) 
 
 grid.arrange(y, o, a, nrow = 3)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <pre class="r"><code># Younger Job Roles ####
 y &lt;- filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot;Human Resources&quot;) %&gt;%
   ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
@@ -688,7 +739,7 @@ a &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
   theme(plot.title = element_text(hjust = 0.5)) 
 
 grid.arrange(y, o, a, nrow = 3)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 <div id="gender-review" class="section level2">
 <h2>Gender Review</h2>
@@ -728,7 +779,7 @@ a &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
   theme(plot.title = element_text(hjust = 0.5)) 
 
 grid.arrange(y, o, a, nrow = 3)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 </div>
 <div id="younger-job-role-review" class="section level2">
 <h2>Younger Job Role Review</h2>
@@ -743,7 +794,7 @@ filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <pre class="r"><code># Education ####
 filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot;Human Resources&quot;) %&gt;%
   ggplot(aes(x = Education, y = JobRole, color = Attrition)) +
@@ -755,7 +806,7 @@ filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <pre class="r"><code># Distance From Home ####
 filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot;Human Resources&quot;) %&gt;%
   ggplot(aes(x = DistanceFromHome, y = JobRole, color = Attrition)) +
@@ -767,7 +818,7 @@ filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <pre class="r"><code># Years in Current Role ####
 filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot;Human Resources&quot;) %&gt;%
   ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
@@ -779,7 +830,7 @@ filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <pre class="r"><code># Years Since Last Promotion Review ####
 filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot;Human Resources&quot;) %&gt;%
   ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
@@ -791,7 +842,7 @@ filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 </div>
 <div id="older-job-role-review" class="section level2">
 <h2>Older Job Role Review</h2>
@@ -806,7 +857,7 @@ filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Dir
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <pre class="r"><code># RelationshipSatisfaction ####
 filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Director&quot; ) %&gt;%
   ggplot(aes(x = RelationshipSatisfaction, y = JobRole, color = Attrition)) +
@@ -818,7 +869,7 @@ filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Dir
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <pre class="r"><code># Total Working Years ####
 filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Director&quot; ) %&gt;%
   ggplot(aes(x = TotalWorkingYears, y = JobRole, color = Attrition)) +
@@ -830,7 +881,7 @@ filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Dir
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 <pre class="r"><code># Education ####
 filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Director&quot; ) %&gt;%
   ggplot(aes(x = Education, y = JobRole, color = Attrition)) +
@@ -842,7 +893,7 @@ filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Dir
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 <pre class="r"><code># Years in Current Role ####
 filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Director&quot; ) %&gt;%
   ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
@@ -854,7 +905,7 @@ filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Dir
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <pre class="r"><code># Years Since Last Promotion Review ####
 filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Director&quot; ) %&gt;%
   ggplot(aes(x = YearsSinceLastPromotion, y = JobRole, color = Attrition)) +
@@ -866,7 +917,7 @@ filter(attrition, JobRole == &quot;Manager&quot; | JobRole == &quot;Research Dir
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 </div>
 <div id="generation-z-specific" class="section level2">
 <h2>Generation z Specific</h2>
@@ -897,7 +948,7 @@ e &lt;- filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole 
 
 
 grid.arrange(t, e, nrow = 2)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 <pre class="r"><code># Distance From Home ####
 filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot;Human Resources&quot; &amp; Age &lt; 22) %&gt;%
   ggplot(aes(x = DistanceFromHome, y = JobRole, color = Attrition)) +
@@ -909,7 +960,7 @@ filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <pre class="r"><code># Years in Current Role ####
 y &lt;- filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole == &quot;Human Resources&quot; &amp; Age &lt; 22) %&gt;%
   ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
@@ -936,7 +987,7 @@ p &lt;- filter(attrition, JobRole == &quot;Sales Representative&quot; | JobRole 
 
 
 grid.arrange(y, p, nrow = 2)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
 </div>
 <div id="all-aged-groups" class="section level2">
 <h2>All Aged Groups</h2>
@@ -967,7 +1018,7 @@ e &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
 
 
 grid.arrange(t, e, nrow = 2)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
 <pre class="r"><code># Distance From Home ####
 filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole == &quot;Sales Executive&quot;  | JobRole == &quot;Laboratory Technician&quot; | JobRole == &quot;Healthcare Representative&quot;| JobRole == &quot;Manufacturing Director&quot; ) %&gt;%
   ggplot(aes(x = DistanceFromHome, y = JobRole, color = Attrition)) +
@@ -979,7 +1030,7 @@ filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole == &quot;S
   scale_color_manual(values = colors) +
   theme(legend.position = &quot;none&quot;) +
   theme(plot.title = element_text(hjust = 0.5)) </code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
 <pre class="r"><code># Years in Current Role ####
 y &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole == &quot;Sales Executive&quot;  | JobRole == &quot;Laboratory Technician&quot; | JobRole == &quot;Healthcare Representative&quot;| JobRole == &quot;Manufacturing Director&quot; ) %&gt;%
   ggplot(aes(x = YearsInCurrentRole, y = JobRole, color = Attrition)) +
@@ -1006,7 +1057,7 @@ p &lt;- filter(attrition, JobRole == &quot;Research Scientist&quot; | JobRole ==
 
 
 grid.arrange(y, p, nrow = 2)</code></pre>
-<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p><img src="Employee-Attrition_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
 </div>
 
 

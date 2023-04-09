@@ -38,21 +38,41 @@ income <- read.csv("CaseStudy2CompSetNoIncome1.csv", header = T)
 no_att <- read.csv("CaseStudy2CompSetNoAttrition.csv", header = T)
 ```
 
-```{r echo=FALSE}
+
+AWS Data Bucket Pull and Test
+------------------
+
+Data will not always be available so this file will not run off the AWS datasets
+```{r echo = FALSE}
 # AWS IMPORT OF DATA ####
 # Get your personal key from IAM "security credentials"
 # Validate who your are accessing aws bucket
 Sys.setenv("AWS_ACCESS_KEY_ID" = "AKIAQEJ7KGHWUUXL4UJV", 
            "AWS_SECRET_ACCESS_KEY" = "z/YE/OyZdY90FwSgjRUcWJ4sz+/6aZLOCA8vP9ya",
            "AWS_DEFAULT_REGION" = "us-east-2")
+```
 
-
+```{r}
 attrition_aws <- s3read_using(FUN = read.csv,                          
                           bucket = "ddsproject1", 
                           object = "CaseStudy2-data.csv") 
 
 
 str(attrition_aws)
+```
+
+```{r}
+#noAtt_aws <- s3read_using(FUN = read.csv, bucket = "ddsproject1", object = "CaseStudy2CompSetNoAttrition.csv") 
+
+
+#str(noAtt_aws)
+```
+
+```{r}
+#income_aws <- s3read_using(FUN = read.csv, bucket = "ddsproject1", object = "CaseStudy2CompSetNoIncome.csv") 
+
+
+#str(income_aws)
 ```
 
 
@@ -74,7 +94,39 @@ INTRO
 This document will be used to review the predictions of KNN, and Naive Bayes. And then perform a six step test.
 
 
+Predict Missing Values
+-----------------
 
+Monthly Income Predict Missing Values
+```{r}
+# Obtain the Mean MonthlyIncome and save to a dataset
+mean_income <- aggregate(MonthlyIncome ~ Attrition + JobRole + Age, data = attrition, FUN = mean)
+
+
+# Save the mean monthly income values to a CSV file
+write.csv(mean_income, "MeanIncome.csv")
+```
+
+Attrition Prediction for Missing values
+```{r}
+# Define a custom function to calculate the mode
+mode_function <- function(x) 
+  {
+  table_x <- table(x)
+  mode_x <- names(table_x)[which.max(table_x)]
+  return(mode_x)
+  }
+
+
+# Obtain the Mode Attrition and save to a dataset
+mode_Attrition <- aggregate(Attrition ~ Department + JobRole + Age, data = attrition, FUN = mode_function)
+
+
+# Save the mean monthly income values to a CSV file
+write.csv(mode_Attrition, "ModeAttrition.csv")
+```
+
+Create Train and Test sets
 ```{r}
 # CLEAN DATA ####
 ## Create Factor Variables for Classification ####

@@ -31,18 +31,48 @@ library(tinytex)
 
 ```{r}
 # CSV IMPORT DATA ####
-attrition <- read.csv("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2-data.csv", header = T)
-income <- read.csv("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2CompSetNoIncome1.csv", header = T)
-no_att <- read.csv("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/GIT/Unit 14 and 15 Case Study 2/CaseStudy2CompSetNoAttrition.csv", header = T)
+attrition <- read.csv("CaseStudy2-data.csv", header = T)
+income <- read.csv("CaseStudy2CompSetNoIncome1.csv", header = T)
+no_att <- read.csv("CaseStudy2CompSetNoAttrition.csv", header = T)
+```
+
+
+AWS Data Bucket Pull and Test
+------------------
+
+Data will not always be available so this file will not run off the AWS datasets
+```{r echo = FALSE}
+# AWS IMPORT OF DATA ####
+# Get your personal key from IAM "security credentials"
+# Validate who your are accessing aws bucket
+Sys.setenv("AWS_ACCESS_KEY_ID" = "AKIAQEJ7KGHWUUXL4UJV", 
+           "AWS_SECRET_ACCESS_KEY" = "z/YE/OyZdY90FwSgjRUcWJ4sz+/6aZLOCA8vP9ya",
+           "AWS_DEFAULT_REGION" = "us-east-2")
 ```
 
 ```{r}
-# AWS IMPORT OF DATA ####
-#Sys.setenv("AWS_ACCESS_KEY_ID" = "your_access_key_id",           "AWS_SECRET_ACCESS_KEY" = "your_secret_access_key")
+attrition_aws <- s3read_using(FUN = read.csv,                          
+                          bucket = "ddsproject1", 
+                          object = "CaseStudy2-data.csv") 
 
-#attrition <- s3read_using(FUN = read.csv,                          bucket = "ddsproject1",                           object = "CaseStudy2-data.csv") 
-#str(attrition)
+
+str(attrition_aws)
 ```
+
+```{r}
+#noAtt_aws <- s3read_using(FUN = read.csv, bucket = "ddsproject1", object = "CaseStudy2CompSetNoAttrition.csv") 
+
+
+#str(noAtt_aws)
+```
+
+```{r}
+#income_aws <- s3read_using(FUN = read.csv, bucket = "ddsproject1", object = "CaseStudy2CompSetNoIncome.csv") 
+
+
+#str(income_aws)
+```
+
 
 ```{r}
 # CLEAN DATA ####
