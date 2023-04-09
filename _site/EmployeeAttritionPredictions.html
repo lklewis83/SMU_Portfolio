@@ -322,20 +322,6 @@ $(document).ready(function () {
 attrition &lt;- read.csv(&quot;CaseStudy2-data.csv&quot;, header = T)
 income &lt;- read.csv(&quot;CaseStudy2CompSetNoIncome1.csv&quot;, header = T)
 no_att &lt;- read.csv(&quot;CaseStudy2CompSetNoAttrition.csv&quot;, header = T)</code></pre>
-<pre class="r"><code># AWS IMPORT OF DATA ####
-# Get your personal key from IAM &quot;security credentials&quot;
-# Validate who your are accessing aws bucket
-Sys.setenv(&quot;AWS_ACCESS_KEY_ID&quot; = &quot;AKIAQEJ7KGHWUUXL4UJV&quot;, 
-           &quot;AWS_SECRET_ACCESS_KEY&quot; = &quot;z/YE/OyZdY90FwSgjRUcWJ4sz+/6aZLOCA8vP9ya&quot;,
-           &quot;AWS_DEFAULT_REGION&quot; = &quot;us-east-2&quot;)
-
-
-attrition_aws &lt;- s3read_using(FUN = read.csv,                          
-                          bucket = &quot;ddsproject1&quot;, 
-                          object = &quot;CaseStudy2-data.csv&quot;) 
-
-
-str(attrition_aws)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    870 obs. of  36 variables:
 ##  $ ID                      : int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ Age                     : int  32 40 35 32 24 27 41 37 34 34 ...

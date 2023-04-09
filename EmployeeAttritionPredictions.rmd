@@ -38,7 +38,7 @@ income <- read.csv("CaseStudy2CompSetNoIncome1.csv", header = T)
 no_att <- read.csv("CaseStudy2CompSetNoAttrition.csv", header = T)
 ```
 
-```{r}
+```{r echo=FALSE}
 # AWS IMPORT OF DATA ####
 # Get your personal key from IAM "security credentials"
 # Validate who your are accessing aws bucket
