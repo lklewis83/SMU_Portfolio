@@ -18,7 +18,7 @@
 <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -284,7 +284,7 @@ $(document).ready(function () {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fa fa-file"></span>
+    <span class="fa fa-folder"></span>
      
     Presentations
      
@@ -319,64 +319,17 @@ $(document).ready(function () {
 
 
 <pre class="r"><code># CSV IMPORT DATA ####
-attrition &lt;- read.csv(&quot;CaseStudy2-data.csv&quot;, header = T)
-income &lt;- read.csv(&quot;CaseStudy2CompSetNoIncome1.csv&quot;, header = T)
-no_att &lt;- read.csv(&quot;CaseStudy2CompSetNoAttrition.csv&quot;, header = T)</code></pre>
+attrition &lt;- read.csv(&quot;CaseStudy2-data.csv&quot;, header = T)</code></pre>
 <div id="aws-data-bucket-pull-and-test" class="section level2">
 <h2>AWS Data Bucket Pull and Test</h2>
 <p>Data will not always be available so this file will not run off the
 AWS datasets</p>
-<pre class="r"><code>attrition_aws &lt;- s3read_using(FUN = read.csv,                          
-                          bucket = &quot;ddsproject1&quot;, 
-                          object = &quot;CaseStudy2-data.csv&quot;) 
+<pre class="r"><code>#attrition_aws &lt;- s3read_using(FUN = read.csv,                          
+                         # bucket = &quot;ddsproject1&quot;, 
+                        #  object = &quot;CaseStudy2-data.csv&quot;) 
 
 
-str(attrition_aws)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    870 obs. of  36 variables:
-##  $ ID                      : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ Age                     : int  32 40 35 32 24 27 41 37 34 34 ...
-##  $ Attrition               : chr  &quot;No&quot; &quot;No&quot; &quot;No&quot; &quot;No&quot; ...
-##  $ BusinessTravel          : chr  &quot;Travel_Rarely&quot; &quot;Travel_Rarely&quot; &quot;Travel_Frequently&quot; &quot;Travel_Rarely&quot; ...
-##  $ DailyRate               : int  117 1308 200 801 567 294 1283 309 1333 653 ...
-##  $ Department              : chr  &quot;Sales&quot; &quot;Research &amp; Development&quot; &quot;Research &amp; Development&quot; &quot;Sales&quot; ...
-##  $ DistanceFromHome        : int  13 14 18 1 2 10 5 10 10 10 ...
-##  $ Education               : int  4 3 2 4 1 2 5 4 4 4 ...
-##  $ EducationField          : chr  &quot;Life Sciences&quot; &quot;Medical&quot; &quot;Life Sciences&quot; &quot;Marketing&quot; ...
-##  $ EmployeeCount           : int  1 1 1 1 1 1 1 1 1 1 ...
-##  $ EmployeeNumber          : int  859 1128 1412 2016 1646 733 1448 1105 1055 1597 ...
-##  $ EnvironmentSatisfaction : int  2 3 3 3 1 4 2 4 3 4 ...
-##  $ Gender                  : chr  &quot;Male&quot; &quot;Male&quot; &quot;Male&quot; &quot;Female&quot; ...
-##  $ HourlyRate              : int  73 44 60 48 32 32 90 88 87 92 ...
-##  $ JobInvolvement          : int  3 2 3 3 3 3 4 2 3 2 ...
-##  $ JobLevel                : int  2 5 3 3 1 3 1 2 1 2 ...
-##  $ JobRole                 : chr  &quot;Sales Executive&quot; &quot;Research Director&quot; &quot;Manufacturing Director&quot; &quot;Sales Executive&quot; ...
-##  $ JobSatisfaction         : int  4 3 4 4 4 1 3 4 3 3 ...
-##  $ MaritalStatus           : chr  &quot;Divorced&quot; &quot;Single&quot; &quot;Single&quot; &quot;Married&quot; ...
-##  $ MonthlyIncome           : int  4403 19626 9362 10422 3760 8793 2127 6694 2220 5063 ...
-##  $ MonthlyRate             : int  9250 17544 19944 24032 17218 4809 5561 24223 18410 15332 ...
-##  $ NumCompaniesWorked      : int  2 1 2 1 1 1 2 2 1 1 ...
-##  $ Over18                  : chr  &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; ...
-##  $ OverTime                : chr  &quot;No&quot; &quot;No&quot; &quot;No&quot; &quot;No&quot; ...
-##  $ PercentSalaryHike       : int  11 14 11 19 13 21 12 14 19 14 ...
-##  $ PerformanceRating       : int  3 3 3 3 3 4 3 3 3 3 ...
-##  $ RelationshipSatisfaction: int  3 1 3 3 3 3 1 3 4 2 ...
-##  $ StandardHours           : int  80 80 80 80 80 80 80 80 80 80 ...
-##  $ StockOptionLevel        : int  1 0 0 2 0 2 0 3 1 1 ...
-##  $ TotalWorkingYears       : int  8 21 10 14 6 9 7 8 1 8 ...
-##  $ TrainingTimesLastYear   : int  3 2 2 3 2 4 5 5 2 3 ...
-##  $ WorkLifeBalance         : int  2 4 3 3 3 2 2 3 3 2 ...
-##  $ YearsAtCompany          : int  5 20 2 14 6 9 4 1 1 8 ...
-##  $ YearsInCurrentRole      : int  2 7 2 10 3 7 2 0 1 2 ...
-##  $ YearsSinceLastPromotion : int  0 4 2 5 1 1 0 0 0 7 ...
-##  $ YearsWithCurrManager    : int  3 9 2 7 3 7 3 0 0 7 ...</code></pre>
-<pre class="r"><code>#noAtt_aws &lt;- s3read_using(FUN = read.csv, bucket = &quot;ddsproject1&quot;, object = &quot;CaseStudy2CompSetNoAttrition.csv&quot;) 
-
-
-#str(noAtt_aws)</code></pre>
-<pre class="r"><code>#income_aws &lt;- s3read_using(FUN = read.csv, bucket = &quot;ddsproject1&quot;, object = &quot;CaseStudy2CompSetNoIncome.csv&quot;) 
-
-
-#str(income_aws)</code></pre>
+#str(attrition_aws)</code></pre>
 <pre class="r"><code># CLEAN DATA ####
 ## REPLACE attrition with new values ####
 attrition$Attrition &lt;- gsub(&quot;No&quot;, &quot;Stayed&quot;, attrition$Attrition)
@@ -391,38 +344,15 @@ colors &lt;- c(&quot;Stayed&quot; = &quot;green&quot;, &quot;Left&quot; = &quot;
 <p>This document will be used to review the predictions of KNN, and
 Naive Bayes. And then perform a six step test.</p>
 </div>
-<div id="predict-missing-values" class="section level2">
-<h2>Predict Missing Values</h2>
-<p>Monthly Income Predict Missing Values</p>
-<pre class="r"><code># Obtain the Mean MonthlyIncome and save to a dataset
-mean_income &lt;- aggregate(MonthlyIncome ~ Attrition + JobRole + Age, data = attrition, FUN = mean)
-
-
-# Save the mean monthly income values to a CSV file
-write.csv(mean_income, &quot;MeanIncome.csv&quot;)</code></pre>
-<p>Attrition Prediction for Missing values</p>
-<pre class="r"><code># Define a custom function to calculate the mode
-mode_function &lt;- function(x) 
-  {
-  table_x &lt;- table(x)
-  mode_x &lt;- names(table_x)[which.max(table_x)]
-  return(mode_x)
-  }
-
-
-# Obtain the Mode Attrition and save to a dataset
-mode_Attrition &lt;- aggregate(Attrition ~ Department + JobRole + Age, data = attrition, FUN = mode_function)
-
-
-# Save the mean monthly income values to a CSV file
-write.csv(mode_Attrition, &quot;ModeAttrition.csv&quot;)</code></pre>
-<p>Create Train and Test sets</p>
+<div id="create-train-and-test-sets" class="section level2">
+<h2>Create Train and Test Sets</h2>
+<p>Create data sets for Monthly Income and Attrition for all models and
+predictions. I am performing a 70/30 split.</p>
 <pre class="r"><code># CLEAN DATA ####
-## Create Factor Variables for Classification ####
-income$Attrition = as.factor(income$Attrition)
 
+## Create Factor Variables for Classification ####
 attrition$Attrition = as.factor(attrition$Attrition)
-# attrition$Department = as.factor(attrition$Department)
+
 
 # Regulate results
 set.seed(123)
@@ -434,27 +364,33 @@ train_att &lt;- attrition[index, ]
 
 test_att &lt;- attrition[-index, ]
 
+# --------------------------------------------
+
 ## Split Data 70-30 | Monthly Income ####
 index1 &lt;- createDataPartition(attrition$MonthlyIncome, p = 0.7, list = FALSE)
 
 train_income &lt;- attrition[index1, ]
 
-test_income &lt;- attrition[-index1, ]</code></pre>
+test_income &lt;- attrition[-index1, ]
+
+# --------------------------------------------
+
+# Convert Attrition and Department columns to character type
+train_income$Attrition &lt;- as.character(train_income$Attrition)
+train_income$Department &lt;- as.character(train_income$Department)
+
+test_income$Attrition &lt;- as.character(test_income$Attrition)
+test_income$Department &lt;- as.character(test_income$Department)</code></pre>
+</div>
+<div id="classification-models" class="section level2">
+<h2>CLASSIFICATION MODELS</h2>
 </div>
 <div id="knn---k-nearest-neighbors" class="section level2">
 <h2>KNN - K Nearest Neighbors</h2>
+<p>I will be using the KNN model for attrition classification
+(probability) only. I will use other models for Monthly Income
+classificaiton (Probability).</p>
 <p>Find the Best K Option</p>
-<pre class="r"><code>## Create a tuning grid ####
-#tuneGrid &lt;- expand.grid(kmax = 1:10, distance = 1:3, kernel = c(&quot;triangular&quot;, &quot;epanechnikov&quot;, &quot;gaussian&quot;))
-tuneGrid &lt;- expand.grid(kmax = 1:10, distance = 1:3, kernel = c(&quot;gaussian&quot;))
-
-model &lt;- train(MonthlyIncome ~ JobRole + Attrition, 
-#model &lt;- train(MonthlyIncome ~ Attrition, 
-               method = &quot;kknn&quot;, 
-               data = train_att, 
-               preProcess = c(&quot;center&quot;, &quot;scale&quot;), 
-               tuneGrid = tuneGrid,
-               trControl = trainControl(method = &quot;cv&quot;, number = 10, verboseIter = TRUE))</code></pre>
 <pre><code>## + Fold01: kmax= 1, distance=1, kernel=gaussian 
 ## - Fold01: kmax= 1, distance=1, kernel=gaussian 
 ## + Fold01: kmax= 2, distance=1, kernel=gaussian 
@@ -1057,84 +993,101 @@ model &lt;- train(MonthlyIncome ~ JobRole + Attrition,
 ## - Fold10: kmax=10, distance=3, kernel=gaussian 
 ## Aggregating results
 ## Selecting tuning parameters
-## Fitting kmax = 10, distance = 1, kernel = gaussian on full training set</code></pre>
+## Fitting kmax = 4, distance = 1, kernel = gaussian on full training set</code></pre>
 <pre class="r"><code># Determine the best K to use for KNN ####
 # 10-fold cross-validation to choose the value of K
 # minimizes the mean squared error (MSE)
-best_k &lt;- model$bestTune$kmax</code></pre>
-<p>KNN classification for attrition</p>
-<pre class="r"><code># KNN Test One ####
+bestk &lt;- modela$bestTune$kmax # Attrition
+
+bestk</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>KNN classification for Base Line attrition</p>
+<pre class="r"><code># KNN model3 | Attrition ####
 model3 &lt;- knn(train_att[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
     test_att[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
     train_att$Attrition, 
-    k = best_k, prob = T)</code></pre>
+    k = bestk, prob = T)</code></pre>
 <p>Validate KNN Model classifying for attrition</p>
 <pre class="r"><code>confusionMatrix(model3, test_att$Attrition)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction Left Stayed
-##     Left      0      2
-##     Stayed   42    217
+##     Left      4      5
+##     Stayed   38    214
 ##                                           
-##                Accuracy : 0.8314          
-##                  95% CI : (0.7804, 0.8748)
+##                Accuracy : 0.8352          
+##                  95% CI : (0.7846, 0.8781)
 ##     No Information Rate : 0.8391          
-##     P-Value [Acc &gt; NIR] : 0.6688          
+##     P-Value [Acc &gt; NIR] : 0.6066          
 ##                                           
-##                   Kappa : -0.0148         
+##                   Kappa : 0.1061          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 4.116e-09       
+##  Mcnemar&#39;s Test P-Value : 1.061e-06       
 ##                                           
-##             Sensitivity : 0.000000        
-##             Specificity : 0.990868        
-##          Pos Pred Value : 0.000000        
-##          Neg Pred Value : 0.837838        
-##              Prevalence : 0.160920        
-##          Detection Rate : 0.000000        
-##    Detection Prevalence : 0.007663        
-##       Balanced Accuracy : 0.495434        
+##             Sensitivity : 0.09524         
+##             Specificity : 0.97717         
+##          Pos Pred Value : 0.44444         
+##          Neg Pred Value : 0.84921         
+##              Prevalence : 0.16092         
+##          Detection Rate : 0.01533         
+##    Detection Prevalence : 0.03448         
+##       Balanced Accuracy : 0.53620         
 ##                                           
 ##        &#39;Positive&#39; Class : Left            
 ## </code></pre>
-<p>Cross Validation | Leave One Out Test</p>
+<ul>
+<li>KNN Cross Validation | Leave One Out Test</li>
+</ul>
+<p>in this case I am not using a train and test model. Instead I am
+classifying (finding probability) against the entire dataset using
+specific classifiers.</p>
 <pre class="r"><code># Leave One Out KNN ####
 model4 &lt;- knn.cv(attrition[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)],
        attrition$Attrition,
-       k = best_k)
+       k = bestk)
 
-confusionMatrix(attrition$Attrition, model4) # works</code></pre>
+confusionMatrix(attrition$Attrition, model4) </code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction Left Stayed
-##     Left      4    136
-##     Stayed   10    720
+##     Left     11    129
+##     Stayed   44    686
 ##                                           
-##                Accuracy : 0.8322          
-##                  95% CI : (0.8057, 0.8564)
-##     No Information Rate : 0.9839          
+##                Accuracy : 0.8011          
+##                  95% CI : (0.7731, 0.8272)
+##     No Information Rate : 0.9368          
 ##     P-Value [Acc &gt; NIR] : 1               
 ##                                           
-##                   Kappa : 0.0234          
+##                   Kappa : 0.0242          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : &lt;2e-16          
+##  Mcnemar&#39;s Test P-Value : 1.698e-10       
 ##                                           
-##             Sensitivity : 0.285714        
-##             Specificity : 0.841121        
-##          Pos Pred Value : 0.028571        
-##          Neg Pred Value : 0.986301        
-##              Prevalence : 0.016092        
-##          Detection Rate : 0.004598        
-##    Detection Prevalence : 0.160920        
-##       Balanced Accuracy : 0.563418        
+##             Sensitivity : 0.20000         
+##             Specificity : 0.84172         
+##          Pos Pred Value : 0.07857         
+##          Neg Pred Value : 0.93973         
+##              Prevalence : 0.06322         
+##          Detection Rate : 0.01264         
+##    Detection Prevalence : 0.16092         
+##       Balanced Accuracy : 0.52086         
 ##                                           
 ##        &#39;Positive&#39; Class : Left            
 ## </code></pre>
 <p>Increase the threshold option. Which only gives me a certain limit
 with the results off KNN Confusion Matrix Sensitvity and Specificity</p>
-<p>With attrition left being the postive class for validation Accuracy
-will be sacrificed for Sensitivity and Specificity match</p>
+<pre class="r"><code>summary(train_att$Attrition)</code></pre>
+<pre><code>##   Left Stayed 
+##     98    511</code></pre>
+<p>With attrition “left” probability being the postive classifier for
+validation. Accuracy will be sacrificed for Sensitivity and Specificity
+match</p>
+<ul>
+<li>Fitting the KNN Models for Specific Results</li>
+</ul>
+<p>Changing the threeshold of the “left” variable, So that I will have
+more “left” options in my training set when I create my model.</p>
 <pre class="r"><code># Threshold KNN ####
 
 # Get probs from the model
@@ -1153,39 +1106,43 @@ CM</code></pre>
 ## 
 ##         
 ## NewModel Left Stayed
-##   Left     28    107
-##   Stayed   14    112
+##   Left     25    109
+##   Stayed   17    110
 ##                                           
-##                Accuracy : 0.5364          
-##                  95% CI : (0.4739, 0.5981)
+##                Accuracy : 0.5172          
+##                  95% CI : (0.4548, 0.5793)
 ##     No Information Rate : 0.8391          
 ##     P-Value [Acc &gt; NIR] : 1               
 ##                                           
-##                   Kappa : 0.094           
+##                   Kappa : 0.0517          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : &lt;2e-16          
+##  Mcnemar&#39;s Test P-Value : 5.192e-16       
 ##                                           
-##             Sensitivity : 0.6667          
-##             Specificity : 0.5114          
-##          Pos Pred Value : 0.2074          
-##          Neg Pred Value : 0.8889          
-##              Prevalence : 0.1609          
-##          Detection Rate : 0.1073          
-##    Detection Prevalence : 0.5172          
-##       Balanced Accuracy : 0.5890          
+##             Sensitivity : 0.59524         
+##             Specificity : 0.50228         
+##          Pos Pred Value : 0.18657         
+##          Neg Pred Value : 0.86614         
+##              Prevalence : 0.16092         
+##          Detection Rate : 0.09579         
+##    Detection Prevalence : 0.51341         
+##       Balanced Accuracy : 0.54876         
 ##                                           
 ##        &#39;Positive&#39; Class : Left            
 ## </code></pre>
-<p>Oversampling KNN I actually tested this first with Naive Bayes and
-had good results.</p>
+<ul>
+<li>Oversampling KNN</li>
+</ul>
+<p>I actually tested this first with Naive Bayes and had good results.
+Similiar to before I will have more “left” options in my training set
+when I create my model.</p>
 <pre class="r"><code># Oversampling #### 
-
+set.seed(123)
 ## Original Value | 36 objects &quot;columns&quot;
 left = train_att %&gt;% filter(Attrition == &quot;Left&quot;)
 #dim(left)
 
 # Add more &quot;Left&quot; Values | 36 objects &quot;columns&quot; | Oversample
-leftOver = rbind(left,left[sample(seq(1,50,1),(356-50),replace = TRUE),])
+leftOver = rbind(left,left[sample(seq(1,85,1),(560-85),replace = TRUE),])
 #dim(leftOver)
 
 # Add the over sample of fraud back to the full dataset
@@ -1201,13 +1158,13 @@ sp_stay = OverSamp1 %&gt;% filter(Attrition == &quot;Stayed&quot;)
 
 summary(OverSamp1$Attrition)</code></pre>
 <pre><code>##   Left Stayed 
-##    404    511</code></pre>
+##    573    511</code></pre>
 <p>KNN Oversampling classification for attrition</p>
 <pre class="r"><code># KNN Test One ####
 model_ov &lt;- knn(OverSamp1[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
     test_att[ , c(&quot;MonthlyIncome&quot;, &quot;Age&quot;)], 
     OverSamp1$Attrition, 
-    k = best_k, prob = T)
+    k = bestk, prob = T)
 
 
 confusionMatrix(model_ov, test_att$Attrition)</code></pre>
@@ -1215,88 +1172,94 @@ confusionMatrix(model_ov, test_att$Attrition)</code></pre>
 ## 
 ##           Reference
 ## Prediction Left Stayed
-##     Left     28    101
-##     Stayed   14    118
-##                                           
-##                Accuracy : 0.5594          
-##                  95% CI : (0.4969, 0.6206)
-##     No Information Rate : 0.8391          
-##     P-Value [Acc &gt; NIR] : 1               
-##                                           
-##                   Kappa : 0.1119          
-##                                           
-##  Mcnemar&#39;s Test P-Value : 1.061e-15       
-##                                           
-##             Sensitivity : 0.6667          
-##             Specificity : 0.5388          
-##          Pos Pred Value : 0.2171          
-##          Neg Pred Value : 0.8939          
-##              Prevalence : 0.1609          
-##          Detection Rate : 0.1073          
-##    Detection Prevalence : 0.4943          
-##       Balanced Accuracy : 0.6027          
-##                                           
-##        &#39;Positive&#39; Class : Left            
+##     Left     24     98
+##     Stayed   18    121
+##                                          
+##                Accuracy : 0.5556         
+##                  95% CI : (0.493, 0.6168)
+##     No Information Rate : 0.8391         
+##     P-Value [Acc &gt; NIR] : 1              
+##                                          
+##                   Kappa : 0.07           
+##                                          
+##  Mcnemar&#39;s Test P-Value : 2.218e-13      
+##                                          
+##             Sensitivity : 0.57143        
+##             Specificity : 0.55251        
+##          Pos Pred Value : 0.19672        
+##          Neg Pred Value : 0.87050        
+##              Prevalence : 0.16092        
+##          Detection Rate : 0.09195        
+##    Detection Prevalence : 0.46743        
+##       Balanced Accuracy : 0.56197        
+##                                          
+##        &#39;Positive&#39; Class : Left           
 ## </code></pre>
 </div>
 <div id="naive-bayes-review" class="section level2">
 <h2>Naive Bayes Review</h2>
-<p>Naive Bayes Attrition Model</p>
-<pre class="r"><code>nb_mod = naiveBayes(train_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)],
-                   train_att$Attrition, 
-                   labels = c(&quot;Left&quot;, &quot;Stayed&quot;))
+<ul>
+<li>Naive Bayes Model Creation</li>
+</ul>
+<pre class="r"><code># NB Attrition Models ####
+# attrition with classifiers
+nb_mod = naiveBayes(train_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)],
+                   train_att$Attrition)
 
 # -------------------------------------------
+# NB Monthly Income Models ####
+# Monthly Income with classifiers
+nbmod = naiveBayes(train_income[,c(&quot;Attrition&quot;,&quot;Age&quot;)],
+                   train_income$MonthlyIncome)</code></pre>
+<ul>
+<li>Naive Bayes predictions for Attrition</li>
+</ul>
+<pre class="r"><code>nb_pred &lt;- predict(nb_mod,  test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)], type = &#39;raw&#39;)
 
-# nbmod = naiveBayes(Attrition~., data = train_att) 
-# THis way cause a bunch of warning messages to appear when you validate with confussion Matrix</code></pre>
-<p>Naive Bayes Validation of Attrition Model</p>
-<pre class="r"><code>nb_CM = confusionMatrix(table(factor(test_att$Attrition, 
-                                  labels = c(&quot;Left&quot;, &quot;Stayed&quot;)),
-                           predict(nb_mod, test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)])))
+write.csv(nb_pred, &quot;Case2Predictionslani Attrition.csv&quot;)</code></pre>
+<ul>
+<li>Naive Bayes Classification or probabilities for Attrition Model</li>
+</ul>
+<p>This is the base line for Naive Bayes</p>
+<pre class="r"><code>nb_CM = confusionMatrix(table(predict(nb_mod,  test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)]),  test_att$Attrition))
 
 nb_CM</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##         
 ##          Left Stayed
-##   Left      0     42
-##   Stayed    0    219
+##   Left      0      0
+##   Stayed   42    219
 ##                                           
 ##                Accuracy : 0.8391          
 ##                  95% CI : (0.7888, 0.8815)
-##     No Information Rate : 1               
-##     P-Value [Acc &gt; NIR] : 1               
+##     No Information Rate : 0.8391          
+##     P-Value [Acc &gt; NIR] : 0.5411          
 ##                                           
 ##                   Kappa : 0               
 ##                                           
 ##  Mcnemar&#39;s Test P-Value : 2.509e-10       
 ##                                           
-##             Sensitivity :     NA          
-##             Specificity : 0.8391          
-##          Pos Pred Value :     NA          
-##          Neg Pred Value :     NA          
-##              Prevalence : 0.0000          
+##             Sensitivity : 0.0000          
+##             Specificity : 1.0000          
+##          Pos Pred Value :    NaN          
+##          Neg Pred Value : 0.8391          
+##              Prevalence : 0.1609          
 ##          Detection Rate : 0.0000          
-##    Detection Prevalence : 0.1609          
-##       Balanced Accuracy :     NA          
+##    Detection Prevalence : 0.0000          
+##       Balanced Accuracy : 0.5000          
 ##                                           
 ##        &#39;Positive&#39; Class : Left            
 ## </code></pre>
-<pre class="r"><code>summary(train_att$Attrition)</code></pre>
-<pre><code>##   Left Stayed 
-##     98    511</code></pre>
-<pre class="r"><code># left 99 | Stayed 510
-# 243 | 366</code></pre>
-<p>Oversampling Data</p>
-<pre class="r"><code># Oversampling Naive Bayes #### 
+<p>Oversampling Data NB Attrition</p>
+<pre class="r"><code># Oversampling Naive Bayes | Attrition #### 
 
 ## Original Value | 36 objects &quot;columns&quot;
 left = train_att %&gt;% filter(Attrition == &quot;Left&quot;)
 #dim(left)
 
 # Add more &quot;Left&quot; Values | 36 objects &quot;columns&quot; | Oversample
-leftOver = rbind(left,left[sample(seq(1,98,1),(200-98),replace = TRUE),])
+leftOver = rbind(left,left[sample(seq(1,98,1),(406-98),replace = TRUE),])
 #dim(leftOver)
 
 # Add the over sample of fraud back to the full dataset
@@ -1312,101 +1275,151 @@ sp_stay = OverSamp %&gt;% filter(Attrition == &quot;Stayed&quot;)
 
 summary(OverSamp$Attrition)</code></pre>
 <pre><code>##   Left Stayed 
-##    200    511</code></pre>
-<pre class="r"><code>summary(train_att$Attrition) # Original Value</code></pre>
-<pre><code>##   Left Stayed 
-##     98    511</code></pre>
-<pre class="r"><code>summary(OverSamp$Attrition) # Oversample Value</code></pre>
-<pre><code>##   Left Stayed 
-##    200    511</code></pre>
+##    406    511</code></pre>
 <p>Oversampling Naive Bayes Attrition Model</p>
 <pre class="r"><code>nb_mod1 = naiveBayes(OverSamp[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)],
-                   OverSamp$Attrition, 
-                   labels = c(&quot;Left&quot;, &quot;Stayed&quot;))
+                   OverSamp$Attrition)
 
 # -------------------------------------------
 
-nb_CM1 = confusionMatrix(table(factor(test_att$Attrition, 
-                                  labels = c(&quot;Left&quot;, &quot;Stayed&quot;)),
-                           predict(nb_mod1, test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)])))
+nb_CM1 = confusionMatrix(table(predict(nb_mod1,  test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)]),  test_att$Attrition))
 
 nb_CM1</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##         
 ##          Left Stayed
-##   Left      7     35
-##   Stayed    9    210
+##   Left     25     87
+##   Stayed   17    132
 ##                                           
-##                Accuracy : 0.8314          
-##                  95% CI : (0.7804, 0.8748)
-##     No Information Rate : 0.9387          
-##     P-Value [Acc &gt; NIR] : 1.000000        
+##                Accuracy : 0.6015          
+##                  95% CI : (0.5393, 0.6614)
+##     No Information Rate : 0.8391          
+##     P-Value [Acc &gt; NIR] : 1               
 ##                                           
-##                   Kappa : 0.1675          
+##                   Kappa : 0.1183          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.000164        
+##  Mcnemar&#39;s Test P-Value : 1.324e-11       
 ##                                           
-##             Sensitivity : 0.43750         
-##             Specificity : 0.85714         
-##          Pos Pred Value : 0.16667         
-##          Neg Pred Value : 0.95890         
-##              Prevalence : 0.06130         
-##          Detection Rate : 0.02682         
-##    Detection Prevalence : 0.16092         
-##       Balanced Accuracy : 0.64732         
+##             Sensitivity : 0.59524         
+##             Specificity : 0.60274         
+##          Pos Pred Value : 0.22321         
+##          Neg Pred Value : 0.88591         
+##              Prevalence : 0.16092         
+##          Detection Rate : 0.09579         
+##    Detection Prevalence : 0.42912         
+##       Balanced Accuracy : 0.59899         
 ##                                           
 ##        &#39;Positive&#39; Class : Left            
 ## </code></pre>
-<pre class="r"><code>## Find average accuracy etc. of 100 train / test splits
-AccHolder = numeric(100)
-SensHolder = numeric(100)
-SpecHolder = numeric(100)
+<ul>
+<li>Naive Bayes predictions for Monthly Income Model</li>
+</ul>
+<p>I can not run the confussion matrix against a binomial numeric value.
+I can make predictions.</p>
+<pre class="r"><code>## NB Oversampling predictions for Attrition ####
+ov_nb_pred &lt;- predict(nb_mod1,  test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)])
 
-for (seed in 1:100)
-{
-    set.seed(seed)
-      ## Split Data 70-30 | Attrition ####
-    index &lt;- sample(seq(1:length(attrition$Attrition)),round(.7*length(attrition$Attrition)))
-    
-    train_att &lt;- attrition[index, ]
-    
-    test_att &lt;- attrition[-index, ]
-    
-    nb_mod &lt;- naiveBayes(OverSamp[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)],
-                       OverSamp$Attrition, 
-                       labels = c(&quot;Left&quot;, &quot;Stayed&quot;))
-    
-    CM &lt;- confusionMatrix(table(factor(test_att$Attrition, 
-                                      labels = c(&quot;Left&quot;, &quot;Stayed&quot;)),
-                               predict(nb_mod1, test_att[,c(&quot;MonthlyIncome&quot;,&quot;Age&quot;)])))
-    
-    AccHolder[seed] = CM$overall[1]
-    SensHolder[seed] = CM$byClass[1]
-    SpecHolder[seed] = CM$byClass[2]
-}
+write.csv(ov_nb_pred, &quot;Case2OVSampPredictlani Attrition.csv&quot;)</code></pre>
+<pre class="r"><code>## NB Prediction for Monthly Income ####
+pred &lt;- predict(nbmod,  data.frame(JobRole = &quot;Manager&quot;, Age = 37), type = &#39;raw&#39;)
 
-mean(AccHolder)</code></pre>
-<pre><code>## [1] 0.8133716</code></pre>
-<pre class="r"><code>#Standard Error of the Mean
-sd(AccHolder)/sqrt(100) </code></pre>
-<pre><code>## [1] 0.002036368</code></pre>
-<pre class="r"><code>mean(SensHolder)</code></pre>
-<pre><code>## [1] 0.3445631</code></pre>
-<pre class="r"><code>#Standard Error of the Mean
-sd(SensHolder)/sqrt(100) </code></pre>
-<pre><code>## [1] 0.008642854</code></pre>
-<pre class="r"><code>mean(SpecHolder)</code></pre>
-<pre><code>## [1] 0.855562</code></pre>
-<pre class="r"><code>#Standard Error of the Mean
-sd(SensHolder)/sqrt(100)</code></pre>
-<pre><code>## [1] 0.008642854</code></pre>
+write.csv(pred, &quot;Case2Predictionslani Salary.csv&quot;)</code></pre>
 </div>
-<div id="six-step-test" class="section level2">
-<h2>Six Step Test</h2>
-<pre class="r"><code># T TEST ####
-#t.test(model3, predicted_values3, paired = TRUE)
-# Error in complete.cases(x, y) : not all arguments have the same length</code></pre>
+<div id="predict-missing-values-via-the-mean-and-mode"
+class="section level2">
+<h2>Predict Missing Values via the MEAN and MODE</h2>
+<p>Monthly Income Predict Missing Values using mean prediction</p>
+<pre class="r"><code># Obtain the Mean MonthlyIncome and save to a dataset
+mean_income &lt;- aggregate(MonthlyIncome ~ Attrition + JobRole + Age, data = attrition, FUN = base::mean)
+
+
+# Save the mean monthly income values to a CSV file
+write.csv(mean_income, &quot;MeanIncome.csv&quot;)</code></pre>
+<p>Attrition Predict for Missing values using mode prediction</p>
+<pre class="r"><code># Define a custom function to calculate the mode
+mode_function &lt;- function(x) 
+  {
+  table_x &lt;- table(x)
+  mode_x &lt;- names(table_x)[which.max(table_x)]
+  return(mode_x)
+  }
+
+
+# Obtain the Mode Attrition and save to a dataset
+mode_Attrition &lt;- aggregate(Attrition ~ Department + JobRole + Age, data = attrition, FUN = mode_function)
+
+
+# Save the mean monthly income values to a CSV file
+write.csv(mode_Attrition, &quot;ModeAttrition.csv&quot;)</code></pre>
+</div>
+<div id="linear-regression-classification" class="section level2">
+<h2>Linear Regression Classification</h2>
+<p>Obtain an RMSE which is less than 3000. When assumptions for SLR are
+met our best estimate of the standard deviation will be the RMSE. The
+smaller the RMSE the better the model has classified</p>
+<pre class="r"><code>fit &lt;- lm(MonthlyIncome ~ JobRole, data = train_income)
+
+current_rse &lt;- summary(fit)$sigma
+
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = MonthlyIncome ~ JobRole, data = train_income)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5607.8 -1226.0  -429.8  1183.2  6782.5 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value
+## (Intercept)                     7268.5      263.0  27.637
+## JobRoleHuman Resources         -3804.8      529.5  -7.186
+## JobRoleLaboratory Technician   -4029.9      324.5 -12.418
+## JobRoleManager                  9896.3      428.7  23.084
+## JobRoleManufacturing Director    277.8      371.9   0.747
+## JobRoleResearch Director        8862.0      428.7  20.671
+## JobRoleResearch Scientist      -3953.4      320.8 -12.325
+## JobRoleSales Executive          -281.0      313.8  -0.896
+## JobRoleSales Representative    -4604.4      418.0 -11.015
+##                               Pr(&gt;|t|)    
+## (Intercept)                    &lt; 2e-16 ***
+## JobRoleHuman Resources        1.98e-12 ***
+## JobRoleLaboratory Technician   &lt; 2e-16 ***
+## JobRoleManager                 &lt; 2e-16 ***
+## JobRoleManufacturing Director    0.455    
+## JobRoleResearch Director       &lt; 2e-16 ***
+## JobRoleResearch Scientist      &lt; 2e-16 ***
+## JobRoleSales Executive           0.371    
+## JobRoleSales Representative    &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2003 on 601 degrees of freedom
+## Multiple R-squared:  0.8129, Adjusted R-squared:  0.8104 
+## F-statistic: 326.3 on 8 and 601 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="linear-regression-prediction" class="section level2">
+<h2>Linear Regression Prediction</h2>
+<p>predictions are made based off the x value from the fit model</p>
+<pre class="r"><code>## SLR Monthly Income Prediction ####
+fit_pred &lt;- predict(fit)
+
+write.csv(fit_pred, &quot;Case2SLRPredictlani Salary.csv&quot;)</code></pre>
+<p>estimate what the Monthly Income would be for a Sales Executive at
+the Age of 19</p>
+<pre class="r"><code>df_est &lt;- data.frame(JobRole = &quot;Sales Executive&quot;, Age = 19)
+# when I used sales representative I got an error...
+# factor JobRole has new level Sales Reresentative
+
+predicted_income &lt;- predict(fit, newdata = df_est)
+
+# write.csv(mode_Attrition, &quot;ModeAttrition.csv&quot;)
+
+# Format the predicted income as a money (currency) variable with a dollar sign
+currency(predicted_income, symbol = &quot;$&quot;)</code></pre>
+<pre><code>##         1 
+## $6,987.46</code></pre>
 </div>
 
 

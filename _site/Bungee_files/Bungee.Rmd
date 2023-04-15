@@ -1,0 +1,192 @@
+---
+title: "Barbie Bungee Immersion Project"
+author: "Lani Lewis"
+date: "3/11/23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+#LIBRARIES ####
+library(tidyverse)
+library(reshape2)
+library(plotly)
+library(ggplot2)
+library(calibrate)
+```
+
+The Barbie Bungee Activity was performed during March 2023 Immersion.
+
+You need: 
+1. Dropper,	2. Spotter, 	3. Recorder  
+
+
+STEP 1 … GATHER THE DATA
+```{r}
+# DATASET ####
+bungee <- data.frame(bands = c(1,1,1,1, 2,2,2, 3,3,3,3, 4, 4,4,4, 5,5,5,5, 6,6,6,6),
+                      drops = c(15.5, 15, 12, 15, 21, 21, 20.5, 25.5, 25.5, 24.5, 28, 31, 28.5, 32, 34, 39.5, 40, 40.25, 41, 46, 46.5, 46.5,46))
+
+
+bungee2 <- data.frame(bands = c("One", "One", "One", "One", "Two",  "Two",  "Two", "Three", "Three", "Three", "Three", "Four", "Four", "Four", "Four", "Five", "Five", "Five", "Five", "Six", "Six", "Six", "Six"),
+                      drops = c(15.5, 15, 12, 15, 21, 21, 20.5, 25.5, 25.5, 24.5, 28, 31, 28.5, 32, 34, 39.5, 40, 40.25, 41, 46, 46.5, 46.5,46))
+
+```
+
+
+Step 2: Create a fully labeled scatter plot in R (preferably with ggplot) and paste it in the box below.
+```{r}
+# Visual Plot ####
+bungee2 %>% ggplot(aes(x = reorder( bands, drops), y = drops, color = bands)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  xlab("Number of Bands Used")
+```
+
+```{r}
+#bungee$bands = as.character(bungee$bands)
+# str(bungee)
+
+# PLOT | Regresion Line ####
+bungee %>% ggplot(aes(x = reorder( bands, drops), y = drops, color = bands)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  xlab("Number of Bands Used")
+
+```
+
+```{r}
+# PLOT | Regression Line | Title ####
+bungee %>% ggplot(aes(x = bands, y = drops)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  xlab("Number of Bands Used") +
+  ggtitle("Batmans Last Drop")
+```
+
+
+Step 3: Conduct a hypothesis test to test the claim that the linear correlation coefficient / slope is different than zero.  Show all 6 steps! Fill in the blanks: 
+
+Was the linear correlation significantly different than zero? How do you know?
+```{r}
+# ALL STEPS COMPARED
+fit <- lm(drops ~ bands, bungee2)
+
+summary(fit)
+```
+
+```{r}
+# CONSOLIDATED
+# Switch the order of the Liner Regression Formula
+fit <- lm(bands ~ drops, bungee)
+
+summary(fit)
+```
+
+
+```{r}
+## y-Intercept - PVALUE ####
+tstat = 7.4502/0.7430 #beta_0_hat / SE(beta_0_hat)
+
+pvalue = (1-pt(tstat,21)) * 2 # Degree of Freedom | Mult. by 2 since 2 sided test
+
+tstat
+pvalue
+```
+
+I reject the null hypothesis that the slope is equal to zero 
+
+There is strong evidence to suggest that the linear correlation coefficient is significantly different than zero as the slopes probability is greater than 0.05. I can see that the slope is increasing as we add additional bands to batman. I am 95% confident that as we add a band our drop distance will increase by 4inches 
+
+```{r}
+## Slope Six Bands- PVALUE ####
+tstat2 = 6.3829/0.1878 #beta_0_hat / SE(beta_0_hat)
+
+pvalue2 = (pt(tstat,21)) * 2 # Degree of Freedom | Mult. by 2 since 2 sided test
+
+tstat2
+pvalue2
+
+
+confint(fit)
+```
+
+
+you have the opportunity to collect a little more information!  You may take one more jump but this time we have a longer tape measure.  Simply choose the number of rubber bands you want to test and line up to collect your extra data point. 
+```{r}
+# FIRST PREDICTION ####
+fit <- lm(bands ~ drops, bungee)
+
+summary(fit)
+
+distance = data.frame(drops = c(144))
+
+
+str(distance)
+```
+
+The goal would be to use 21 rubber bands and see if the drop is close to 144inches. That will let us know if the model is working. 
+
+Which it did...
+```{r}
+## PREDICT FIT LINE ####
+predict(fit, newdata = distance, interval = "confidence")
+
+```
+
+```{r}
+# DATASET ####
+bungee3 <- data.frame(bands = c(1,1,1,1, 2,2,2, 3,3,3,3, 4, 4,4,4, 5,5,5,5, 6,6,6,6, 25),
+                      drops = c(15.5, 15, 12, 15, 21, 21, 20.5, 25.5, 25.5, 24.5, 28, 31, 28.5, 32, 34, 39.5, 40, 40.25, 41, 46, 46.5, 46.5,46, 171))
+
+
+bungee4 <- data.frame(bands = c("One", "One", "One", "One", "Two",  "Two",  "Two", "Three", "Three", "Three", "Three", "Four", "Four", "Four", "Four", "Five", "Five", "Five", "Five", "Six", "Six", "Six", "Six", "Twenty Five"),
+                      drops = c(15.5, 15, 12, 15, 21, 21, 20.5, 25.5, 25.5, 24.5, 28, 31, 28.5, 32, 34, 39.5, 40, 40.25, 41, 46, 46.5, 46.5,46, 171))
+
+```
+
+
+
+
+We have measured the distance from the top to the bottom of the Hughes Trigg Bridge!  It is 22ft 4 inches.  Use your regression equation to estimate the number of rubber bands needed to bungee your super hero or Barbie that distance. The winner will bungee their subject closest to the ground without hitting any body part.  Remember that it is ok if hair hits the ground but any other body part (hand, head, etc.) results in death or serious injury to super hero or Barbie and disqualification for you team! J  
+```{r}
+# SECOND PREDICTION ####
+fit <- lm(bands ~ drops, bungee)
+
+summary(fit)
+
+distance = data.frame(drops = 272)
+
+str(distance)
+```
+
+```{r}
+## PREDICT FIT LINE 2 ####
+predict(fit, newdata = distance, interval = "confidence")
+
+```
+
+```{r}
+# Visual Plot ####
+bungee4 %>% ggplot(aes(x = reorder( bands, drops), y = drops, color = bands)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  xlab("Number of Bands Used")
+```
+
+```{r}
+# PLOT | Regression Line | Title ####
+bungee3 %>% ggplot(aes(x = bands, y = drops)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  xlab("Number of Bands Used") +
+  ggtitle("Batmans Last Drop")
+```
+
+
+
+
+

@@ -2,8 +2,7 @@
 title: "Employee Attrition Presentation Data Review"
 author: "Lani Lewis"
 date: "2023-04-01"
-output:
-  html_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -32,8 +31,6 @@ library(tinytex)
 ```{r}
 # CSV IMPORT DATA ####
 attrition <- read.csv("CaseStudy2-data.csv", header = T)
-income <- read.csv("CaseStudy2CompSetNoIncome1.csv", header = T)
-no_att <- read.csv("CaseStudy2CompSetNoAttrition.csv", header = T)
 ```
 
 
@@ -45,32 +42,18 @@ Data will not always be available so this file will not run off the AWS datasets
 # AWS IMPORT OF DATA ####
 # Get your personal key from IAM "security credentials"
 # Validate who your are accessing aws bucket
-Sys.setenv("AWS_ACCESS_KEY_ID" = "AKIAQEJ7KGHWUUXL4UJV", 
-           "AWS_SECRET_ACCESS_KEY" = "z/YE/OyZdY90FwSgjRUcWJ4sz+/6aZLOCA8vP9ya",
-           "AWS_DEFAULT_REGION" = "us-east-2")
+#Sys.setenv("AWS_ACCESS_KEY_ID" = "AKIAQEJ7KGHWUUXL4UJV", 
+         #  "AWS_SECRET_ACCESS_KEY" = "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",
+          # "AWS_DEFAULT_REGION" = "us-east-2")
 ```
 
 ```{r}
-attrition_aws <- s3read_using(FUN = read.csv,                          
-                          bucket = "ddsproject1", 
-                          object = "CaseStudy2-data.csv") 
+#attrition_aws <- s3read_using(FUN = read.csv,                          
+                          #bucket = "ddsproject1", 
+                          #object = "CaseStudy2-data.csv") 
 
 
-str(attrition_aws)
-```
-
-```{r}
-#noAtt_aws <- s3read_using(FUN = read.csv, bucket = "ddsproject1", object = "CaseStudy2CompSetNoAttrition.csv") 
-
-
-#str(noAtt_aws)
-```
-
-```{r}
-#income_aws <- s3read_using(FUN = read.csv, bucket = "ddsproject1", object = "CaseStudy2CompSetNoIncome.csv") 
-
-
-#str(income_aws)
+#str(attrition_aws)
 ```
 
 
@@ -87,7 +70,24 @@ colors <- c("Stayed" = "green", "Left" = "maroon")
 INTRO
 ------
 
-These graphs will be used to highlight Longevity at this company and the difference between Departments and Job Roles.
+Understanding of the attrition at the company
+```{r}
+summary(attrition$Attrition)
+```
+
+```{r}
+mean(attrition$YearsAtCompany)
+```
+
+```{r}
+mean(attrition$Age)
+```
+
+```{r}
+mean(attrition$MonthlyIncome)
+```
+
+These graphs will be used to get an Understanding of the Longevity at this company and the difference between Departments and Job Roles.
 
 ```{r}
 # Positive ####
@@ -625,6 +625,13 @@ filter(attrition, JobRole == "Manager" | JobRole == "Research Director" ) %>%
   scale_color_manual(values = colors) +
   theme(legend.position = "none") +
   theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+```{r} 
+## Generation X ####
+attrition %>% 
+  filter(JobRole %in% c("Manager", "Research Director")) %>% 
+  summarize(mean_TotalWorkingYears = mean(TotalWorkingYears))
 ```
 
 ```{r} 
