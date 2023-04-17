@@ -23,6 +23,8 @@ library(class)
 library(caret)
 library(e1071)
 #library(kknn)
+#install.packages('RColorBrewer')
+library(RColorBrewer)
 ```
 
 ```{r include = FALSE}
@@ -69,7 +71,7 @@ ui <- fluidPage(
     
     # Tabset panel with two tabs ----
     tabsetPanel(
-    tabPanel("Plot", 
+    tabPanel("Attrition Scatter Plot", subtitle = "High Level View of Employee Attrition",
              
         # Sidebar layout with input and output definitions #### ----
         sidebarLayout(
@@ -117,8 +119,8 @@ ui <- fluidPage(
        ) # sidebar layout
     ), # end of Plot tabPanel
     
-  tabPanel("KNN Review", 
-             
+  tabPanel("KNN Classifications", subtitle = "This tab is used to perform basic KNN Classification", 
+             p("This classification is only looking at integers (Binomial) values."),
         # Sidebar with input options
   sidebarLayout(
     sidebarPanel(
@@ -143,7 +145,7 @@ ui <- fluidPage(
        ) # sidebar layout 
     ), # end of KNN Review tabPanel
   
-  tabPanel("Naive Bayes Review", 
+  tabPanel("Naive Bayes (NB) Predictions",  subtitle = "This tab is used to perform basic NB predictions", 
             
         # Sidebar layout with input and output definitions ----
         sidebarLayout(
@@ -153,25 +155,25 @@ ui <- fluidPage(
           sidebarPanel(
           
                   #Input: Slider for the number of bins ----
-                  selectInput("pred1", 
-                        "Select KNN Predictor 1", 
+                  selectInput("classifier1", 
+                        "Select Predictor 1", 
                         choices = c("Age" = "Age",
                                     "DistanceFromHome" = "DistanceFromHome",
                                     "JobLevel" = "JobLevel"),
                         selected = "Age"),
           
-                   selectInput("pred2", 
-                        "Select KNN Predictor 2", 
-                        choices = c("MonthlyIncome" = "MonthlyIncome",  
+                   selectInput("classifier2", 
+                        "Select Predictor 2", 
+                        choices = c("JobRole" = "JobRole",
                                     "HourlyRate" = "HourlyRate",
                                     "JobSatisfaction" = "JobSatisfaction"),
-                        selected = "MonthlyIncome"),
+                        selected = "JobRole"),
 
-                   selectInput("class", 
-                        "Select KNN Classifier", 
+                   selectInput("predictor", 
+                        "Select Classifier (class)", 
                         choices = c("Attrition" = "Attrition",
-                                    "Gender" = "Gender"),
-                        selected = "Attrition"),
+                                    "MonthlyIncome" = "MonthlyIncome"),
+                        selected = "MonthlyIncome"),
             
           ),
           
@@ -294,8 +296,8 @@ server <- function(input, output) {
         
   }) # displot
   
-
-
+# -------------------------------------------------
+  
   output$knnreview <- renderPlot({
     
        # Get selected variables
@@ -305,12 +307,60 @@ server <- function(input, output) {
 
     # Perform KNN classification
     #knn <- knn(train[,c(classvar1, classvar2)], train[,predictvar], k = input$bestk)
+    # Generate color palette
+    num_classes <- length(unique(train[,class]))
+    color_palette <- colorRampPalette(brewer.pal(num_classes, "Set1"))
+    
+    # Run kNN algorithm
     knn <- knn.cv(train[,c(pred1, pred2)], train[, class], k = input$bestk)
     
-    # Plot results
-    plot(knn)
+    # Create plot with custom color palette
+    plot(train[,pred1], 
+         train[,pred2], 
+         col = color_palette(num_classes)[train[,class]],
+         pch = 20, cex = 2, 
+         legend = levels(train[,class]), 
+         main = paste("k-NN Classification (k =", input$bestk, ")"),
+         xlab = pred1, ylab = pred2, 
+         xlim = range(train[,pred1]), ylim = range(train[,pred2]))
+    
+    # Add color key
+    legend("topright", 
+       legend = levels(train[,class]), 
+       col = color_palette(num_classes),
+       pch = 20, 
+       title = "Class")    
     
   }) # knnReview
+  
+# -------------------------------------------------
+  
+  output$nbreview <- renderPlot({
+    classifier1 <- input$classifier1
+    classifier2 <- input$classifier2
+    predictor <- input$predictor
+    
+    
+    nb <- naiveBayes(train[[predictor]] ~ as.factor(paste(train[[classifier1]], train[[classifier2]], sep = ",")), 
+                     data = train)
+    
+    
+    nb_pred <- predict(nb, data.frame(classifier1 = train[[classifier1]], 
+                                      classifier2 = train[[classifier2]]))
+    
+    
+    df <- data.frame(classifier1 = train[[classifier1]], 
+                     classifier2 = train[[classifier2]],
+                     class = nb_pred)
+    
+    
+    ggplot(df, aes(x = classifier1, fill = class)) +
+      geom_bar(position = "dodge") +
+      facet_wrap(~classifier2) +
+      labs(x = NULL, y = NULL, fill = "Class") +
+      theme_minimal() +
+      scale_fill_manual(values = c("blue", "lightblue", "lightgreen"))
+  })
 } # Server  
 
 shinyApp(ui, server) # Combines it all together
