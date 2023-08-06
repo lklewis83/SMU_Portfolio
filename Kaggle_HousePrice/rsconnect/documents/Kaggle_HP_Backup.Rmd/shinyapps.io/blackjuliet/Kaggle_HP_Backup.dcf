@@ -1,0 +1,13 @@
+name: Kaggle_HP_Backup
+title: Kaggle_HP_Backup
+username:
+account: blackjuliet
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9557422
+bundleId: 7535200
+url: https://blackjuliet.shinyapps.io/Kaggle_HP_Backup/
+when: 1691259397.09654
+lastSyncTime: 1691259397.09655
+asMultiple: FALSE
+asStatic: FALSE
