@@ -24,6 +24,8 @@ navbar:
             href: https://blackjuliet.shinyapps.io/Employee_Attrition/
           - text: "Shiny App | Kaggle House Prediction"
             href: https://blackjuliet.shinyapps.io/Kaggle_HousePricePrediction_G7/
+          - text: "Spotify - Azure Website_Shiny App | DBMS G.P."
+            href: https://azrhythmwebapp.azurewebsites.net/
     - text: "Presentations"
       icon: fa-folder
       menu:
@@ -31,8 +33,15 @@ navbar:
             href: https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4
           - text: "Frito Lay Employee Att. Pres."
             href: https://smu-2u-com.zoom.us/rec/share/5aD2nLCH7D97Ms2iXO3UybsUntoQ6kzo_gfVvoU5ARexKfgi8dwTObvjADRBJf0L.zxcnwP4HP3ZeLlb7 
-          - text: "Kaggle House Prediction"
+          - text: "Spotify | DBMS G.P. Pres."
+            href: Azure Rhythm_Cloud Miners.pdf
+    - text: "Project Documentation"
+      icon: fa-folder
+      menu:
+          - text: "Kaggle House Prediction Doc."
             href: G7_Kaggle_HousePricePrediction.pdf 
+          - text: "Spotify | DBMS G.P. Doc."
+            href: CloudMiner_AzureRhythm.pdf
 
 
 output:

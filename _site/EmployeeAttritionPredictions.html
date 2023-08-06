@@ -15,7 +15,7 @@
 
 <title>Employee Attrition Predictions</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
@@ -34,8 +34,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -280,6 +280,12 @@ $(document).ready(function () {
     <li>
       <a href="https://blackjuliet.shinyapps.io/Employee_Attrition/">Shiny App | Employee Attrition</a>
     </li>
+    <li>
+      <a href="https://blackjuliet.shinyapps.io/Kaggle_HousePricePrediction_G7/">Shiny App | Kaggle House Prediction</a>
+    </li>
+    <li>
+      <a href="https://azrhythmwebapp.azurewebsites.net/">Spotify - Azure Website_Shiny App | DBMS G.P.</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -296,6 +302,26 @@ $(document).ready(function () {
     </li>
     <li>
       <a href="https://smu-2u-com.zoom.us/rec/share/5aD2nLCH7D97Ms2iXO3UybsUntoQ6kzo_gfVvoU5ARexKfgi8dwTObvjADRBJf0L.zxcnwP4HP3ZeLlb7">Frito Lay Employee Att. Pres.</a>
+    </li>
+    <li>
+      <a href="Azure Rhythm_Cloud Miners.pdf">Spotify | DBMS G.P. Pres.</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-folder"></span>
+     
+    Project Documentation
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="G7_Kaggle_HousePricePrediction.pdf">Kaggle House Prediction Doc.</a>
+    </li>
+    <li>
+      <a href="CloudMiner_AzureRhythm.pdf">Spotify | DBMS G.P. Doc.</a>
     </li>
   </ul>
 </li>
@@ -1372,29 +1398,28 @@ summary(fit)</code></pre>
 ## -5607.8 -1226.0  -429.8  1183.2  6782.5 
 ## 
 ## Coefficients:
-##                               Estimate Std. Error
-## (Intercept)                     7268.5      263.0
-## JobRoleHuman Resources         -3804.8      529.5
-## JobRoleLaboratory Technician   -4029.9      324.5
-## JobRoleManager                  9896.3      428.7
-## JobRoleManufacturing Director    277.8      371.9
-## JobRoleResearch Director        8862.0      428.7
-## JobRoleResearch Scientist      -3953.4      320.8
-## JobRoleSales Executive          -281.0      313.8
-## JobRoleSales Representative    -4604.4      418.0
-##                               t value Pr(&gt;|t|)    
-## (Intercept)                    27.637  &lt; 2e-16 ***
-## JobRoleHuman Resources         -7.186 1.98e-12 ***
-## JobRoleLaboratory Technician  -12.418  &lt; 2e-16 ***
-## JobRoleManager                 23.084  &lt; 2e-16 ***
-## JobRoleManufacturing Director   0.747    0.455    
-## JobRoleResearch Director       20.671  &lt; 2e-16 ***
-## JobRoleResearch Scientist     -12.325  &lt; 2e-16 ***
-## JobRoleSales Executive         -0.896    0.371    
-## JobRoleSales Representative   -11.015  &lt; 2e-16 ***
+##                               Estimate Std. Error t value
+## (Intercept)                     7268.5      263.0  27.637
+## JobRoleHuman Resources         -3804.8      529.5  -7.186
+## JobRoleLaboratory Technician   -4029.9      324.5 -12.418
+## JobRoleManager                  9896.3      428.7  23.084
+## JobRoleManufacturing Director    277.8      371.9   0.747
+## JobRoleResearch Director        8862.0      428.7  20.671
+## JobRoleResearch Scientist      -3953.4      320.8 -12.325
+## JobRoleSales Executive          -281.0      313.8  -0.896
+## JobRoleSales Representative    -4604.4      418.0 -11.015
+##                               Pr(&gt;|t|)    
+## (Intercept)                    &lt; 2e-16 ***
+## JobRoleHuman Resources        1.98e-12 ***
+## JobRoleLaboratory Technician   &lt; 2e-16 ***
+## JobRoleManager                 &lt; 2e-16 ***
+## JobRoleManufacturing Director    0.455    
+## JobRoleResearch Director       &lt; 2e-16 ***
+## JobRoleResearch Scientist      &lt; 2e-16 ***
+## JobRoleSales Executive           0.371    
+## JobRoleSales Representative    &lt; 2e-16 ***
 ## ---
-## Signif. codes:  
-## 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 2003 on 601 degrees of freedom
 ## Multiple R-squared:  0.8129, Adjusted R-squared:  0.8104 

@@ -1,0 +1,20 @@
+
+Call:
+lm(formula = SalePrice ~ +BsmtExposure + BsmtUnfSF + GarageArea + 
+    HalfBath + LotArea + LowQualFinSF + Neighborhood + ScreenPorch + 
+    YearBuilt + BedroomAbvGr + BsmtFinSF1 + ExterQual + Foundation + 
+    KitchenQual + MasVnrArea + PoolArea + SaleCondition + Street + 
+    X1stFlrSF + BldgType + BsmtFinSF2 + Condition1 + LandContour + 
+    MSSubClass + OverallCond + PoolQC + TotalBsmtSF + X2ndFlrSF + 
+    BsmtQual + Condition2 + FireplaceQu + Functional + GrLivArea + 
+    LandSlope + OverallQual + RoofMatl + SaleType + TotRmsAbvGrd, 
+    data = TrainingDB)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-146943  -10524     209   10039  142788 
+
+Residual standard error: 22680 on 974 degrees of freedom
+Multiple R-squared:  0.925,	Adjusted R-squared:  0.9157 
+F-statistic:   100 on 120 and 974 DF,  p-value: < 2.2e-16
+

@@ -1,0 +1,430 @@
+---
+title: "Kaggle House Price Prediction"
+subtitle: ""
+date: "`r Sys.Date()`"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r include = FALSE}
+# LIBRARIES ####
+library(tidyverse)
+library(reshape2)
+library(plotly)
+library(ggplot2)
+library(scales)
+library(pwr)
+library(agricolae)
+library(huxtable)
+library(lawstat)
+library(lsmeans)
+library(nCDunnett)
+library(dplyr)
+library(WDI)
+library(investr)
+library(multcomp)
+library(pairwiseCI)
+library(DescTools)
+library(GGally)
+library(car)
+library(stats)
+library(plotly)
+library(dplyr)
+library(shinydashboard)
+library(shiny)
+library(shinythemes)
+library(olsrr)
+library(rsconnect)
+```
+
+```{r include = FALSE}
+# Import Dataset ####
+#setwd("C:/Users/LA026LE/OneDrive - Pitney Bowes/MASTER DEGREE/MSDS_6371_Stat_Foundations/KaggleProject/lklewis83.github.io-main/Kaggle_HousePrice")
+
+Train = read.csv("train.csv", header = T)
+
+#Test = read.csv("test.csv", header = T)
+
+# Split Data ####
+set.seed(4)
+
+TrainObs = sample(seq(1,dim(Train)[1]),round(.75*dim(Train)[1]),replace = FALSE)
+
+TrainingDB = Train[TrainObs,]
+
+TestingDB = Train[-TrainObs,]
+
+# Transform Data ####
+TrainingDB <- TrainingDB %>%
+  mutate_if(is.character, as.factor)
+
+# TrainingDB <- TrainingDB %>%   mutate_if(is.integer, as.factor)
+
+# Convert SalePrice to numeric | Training DB ####
+TrainingDB$SalePrice <- as.numeric(as.character(TrainingDB$SalePrice))
+
+TestingDB <- TestingDB %>%
+  mutate_if(is.character, as.factor)
+
+#TestingDB <- TestingDB %>%   mutate_if(is.integer, as.factor)
+
+# Convert SalePrice to numeric | Testing DB ####
+TestingDB$SalePrice <- as.numeric(as.character(TestingDB$SalePrice))
+```
+
+```{r include = FALSE}
+# FORWARD FIT BEST MODEL | FORW_fit ####
+FORW_fit = lm(SalePrice ~ 
+              +YearBuilt 
+              +Neighborhood 
+              +BsmtFinSF1 
+              +TotalBsmtSF  
+              +GrLivArea 
+              +GarageArea 
+              +EnclosedPorch
+              , data = TrainingDB)
+
+# Parameter Estimate
+#summary(FORW_fit)
+```
+
+```{r include = FALSE}
+# CUSTOM FIT BEST MODEL | Model1_fit####
+#Model1_fit = lm(SalePrice ~ 
+ #+ Fireplaces
+ #+ Foundation
+ #+ LotConfig
+ #+ HouseStyle
+ #+ Neighborhood
+ #+ GarageCars
+ #+ LotArea
+ #+ GrLivArea
+ #+ BsmtFullBath, data = TrainingDB)
+
+# Parameter Estimate
+#summary(Model1_fit)
+```
+
+
+
+```{r echo = FALSE}
+# UI ####
+ui <- dashboardPage(
+  dashboardHeader(title = "Group 7 - Final Project"),
+  dashboardSidebar(
+    # Add tabs to the sidebar
+    sidebarMenu(
+      id = "tabs",  # Add id here
+      menuItem("Custom Fit Model", tabName = "tab1"),
+      menuItem("Residual Review", tabName = "tab2"),
+      menuItem("Find the Best Fit (3 Methods)", tabName = "tab3")
+    )
+  ),
+
+  dashboardBody(
+    tabItems(
+      # Tab1 ####
+      tabItem(tabName = "tab1",
+              fluidRow(
+                column(width = 6,
+                       h3("Select Explanatory Variables"),
+                       checkboxGroupInput("explanatory_vars", "Explanatory Variables:",
+                                          choices = c("Fireplaces", "Foundation", "LotConfig",
+                                                      "HouseStyle", "Neighborhood", "GarageCars",
+                                                      "LotArea", "GrLivArea", "BsmtFullBath",
+                                                      "YearBuilt", "BsmtFinSF1", "TotalBsmtSF",
+                                                      "EnclosedPorch"),
+                                          selected = c("Fireplaces", "Foundation", "LotConfig", "HouseStyle")
+                       )
+                ),
+                column(width = 6,
+                       h3("Response Variable"),
+                       verbatimTextOutput("response_var_output")
+                )
+              ),
+              # Output to display the parameter estimate table
+              fluidRow(
+                column(width = 12,
+                       h3("Parameter Estimate Table"),
+                       verbatimTextOutput("tab1_content")
+                )
+              )
+      ), # tabItem tab1
+
+      # Second tab: Residual Review ####
+      tabItem(tabName = "tab2",
+            fluidRow(
+              column(width = 6,
+                     h3("Add Residual Plot/s Below"),
+                     radioButtons("residual_plot_type", "Residual Plot:",
+                                  choices = c("Neighborhood", "COOKS D", "Standardized", "Leverage"),
+                                  selected = "Neighborhood"
+                     )
+              ),
+              fluidRow(
+                column(width = 6,
+                       h3("Plot Options"),
+                       p("Use predefined Model or Custom Created Model | Residual Plot use Only"),
+                       checkboxInput("Use_Custom_Model", "Use Custom Created Model", value = FALSE)
+                )
+              )
+            ),
+            
+            # Output to display the variable plot
+            fluidRow(
+              column(width = 12,
+                     condition = "input.residual_plot_type == 'Neighborhood'",
+                     plotlyOutput("variable_selection_plot")
+              )
+            ),
+            
+            # Output to display the Cook's Distance plot
+            fluidRow(
+              column(width = 12,
+                     condition = "input.residual_plot_type == 'COOK D'",
+                     plotlyOutput("cooks_distance_plot")
+              )
+            ),
+            
+            # Output to display the Standardized Residuals plot
+            fluidRow(
+              column(width = 12,
+                     condition = "input.residual_plot_type == 'Standardized'",
+                     plotlyOutput("standardized_residuals_plot")
+              )
+            ),
+            
+            # Output to display the Leverage plot
+            fluidRow(
+              column(width = 12,
+                     condition = "input.residual_plot_type == 'Leverage'",
+                     plotlyOutput("residual_leverage_plot")
+              )
+            )
+      ), # tabItem tab2
+
+    # Third Tab: Variable Selection Models ####
+    tabItem(tabName = "tab3",
+        fluidRow(
+          column(width = 6,
+                 h3("Select Variable Selection Model"),
+                 selectInput("var_selection_model", "Variable Selection Model:",
+                             choices = c("Backward", "Forward", "Stepwise"),
+                             selected = "Backward"
+                 )
+          ),
+          column(width = 6,
+                 h3("NOTE:"),
+                 p("Predefined Model is Used")
+          )
+        ),
+
+       fluidRow(
+          # Output to display of variable selection
+          column(width = 12,
+                 verbatimTextOutput("table_BPE")
+          ),
+          
+          column(width = 12,
+                 verbatimTextOutput("table_FPE")
+          ),
+          
+          column(width = 12,
+                 verbatimTextOutput("table_SPE")
+          ),
+          
+        )
+) # tabItem tab3
+
+
+
+    ) # tabItems
+  ) # Dashboard Body
+) # Dashboard Page
+
+```
+
+```{r echo = FALSE}
+# Server ####
+server <- function(input, output, session) {
+  
+  # Tab 1 | Server ####
+  model_regression <- reactive({
+    # Extract the selected explanatory variables from the data frame
+    selected_vars <- c("SalePrice", input$explanatory_vars)
+    variables_to_fit <- TrainingDB[, selected_vars]
+
+    # Perform the linear regression
+    fit <- lm(SalePrice ~ ., data = variables_to_fit)
+
+    return(fit)
+  }) # Tab 1 | Reactive
+
+  # Display parameter estimate results for the linear regression model
+  output$parameter_estimate <- renderPrint({
+    fit <- model_regression()
+    summary(fit)
+  })
+
+  # Function to display the response variable based on the selected explanatory variables
+  output$response_var_output <- renderPrint({
+    paste("Response Variable: SalePrice")
+  })
+
+  # Observe tab changes and update the content of Tab 1
+  observe({
+    if (input$tabs == "tab1") {
+      # Display the parameter estimate table in Tab 1
+      output$tab1_content <- renderPrint({
+        fit <- model_regression()
+        summary(fit)
+      })
+    }
+  }) #  observe Tab 1
+
+  # Tab 2 (Residual Review) | Server ####
+  observe({
+    if (input$tabs == "tab2") {
+      if (input$Use_Custom_Model) {
+        data <- model_regression() 
+        } else {
+        data <- FORW_fit  # Assuming FORW_fit is defined and available in the environment
+        }
+      
+      
+      if (input$residual_plot_type == "Neighborhood") {
+         ###Variable Plot ####
+                  
+          # Filter the data for the desired neighborhoods (NAmes, Edwards, and BrkSide)
+          df_filtered <- TrainingDB[TrainingDB$Neighborhood %in% c("NAmes", "Edwards", "BrkSide"), ]
+          
+        output$variable_selection_plot <- renderPlotly({
+          # Create the scatterplot with facet wrap
+          ggplot(df_filtered, aes(x = GrLivArea, y = SalePrice, col = Neighborhood)) +
+            geom_point() +
+            facet_wrap(~ Neighborhood, scales = "free") +
+            labs(title = "Price vs. Square Footage by Neighborhood",
+                 #subtitle ="This is a static chart",
+                 x = "Square Footage (Living Area) | Scaled: 100",
+                 y = "Price of the Home | Scaled: 100") +
+            scale_x_continuous(labels = scales::comma_format(scale = 0.01, accuracy = 1)) +
+            scale_y_continuous(labels = scales::comma_format(scale = 0.01, accuracy = 1))
+
+        })
+        }
+      
+      ## Calculate residuals and leverage values ####
+      residuals <- resid(data)
+      leverage <- influence(data)$hat
+      residual_leverage_df <- data.frame(Residuals = residuals, Leverage = leverage)
+
+      if (input$residual_plot_type == "COOKS D") {
+        # Cook's Distance Calculation
+        cooks_distance <- cooks.distance(data)
+        
+        ### Cook's Distance Plot | Interactive ####
+        plot_data <- data.frame(Index = seq_along(cooks_distance), Cooks_Distance = cooks_distance)
+        
+        output$cooks_distance_plot <- renderPlotly({
+          plot_ly(data = plot_data, x = ~Index, y = ~Cooks_Distance, type = "scatter", mode = "markers",
+                  marker = list(color = "blue", size = 8)) %>%
+            add_trace(x = ~Index, y = ~Cooks_Distance, mode = "lines", line = list(color = "red", dash = "dash"),
+                      name = "Threshold") %>%
+            layout(title = "Cook's Distance Plot",
+                   xaxis = list(title = "Observation Index"),
+                   yaxis = list(title = "Cook's Distance"))
+        })
+      }
+      
+      if (input$residual_plot_type == "Standardized") {
+        # Standardized Residuals Calculation
+        model_residuals <- rstandard(data)
+        
+        ### Standardized Residuals Plot | Interactive ####
+        plot_data <- data.frame(Index = seq_along(model_residuals), Standardized_Residuals = model_residuals)
+        output$standardized_residuals_plot <- renderPlotly({
+          plot_ly(data = plot_data, x = ~Index, y = ~Standardized_Residuals, type = "scatter", mode = "markers",
+                  marker = list(color = "blue", size = 8)) %>%
+            layout(title = "Standardized Residuals Plot",
+                   xaxis = list(title = "Observation Index"),
+                   yaxis = list(title = "Standardized Residuals"))
+        })
+      }
+
+      if (input$residual_plot_type == "Leverage") {
+        ### Leverage Plot | Interactive ####
+        output$residual_leverage_plot <- renderPlotly({
+          ggplot <- ggplot(residual_leverage_df, aes(x = Leverage, y = Residuals)) +
+            geom_point(size = 3, color = "blue") +
+            geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+            geom_smooth(method = "loess", se = FALSE, color = "black", span = 0.75) +
+            labs(title = "Residual Leverage Plot",
+                 x = "Leverage",
+                 y = "Residuals")
+          ggplotly(ggplot)
+        })
+      }
+      
+      
+        
+    } # Tab 2
+  }) # observe Tab 2
+  
+    
+# Tab 3: Variable Selection Models ####
+observe({
+  if (input$tabs == "tab3") {
+    # Backward Selection ####
+    if (input$var_selection_model == "Backward") {
+      output$table_BPE <- renderText({
+        text <- paste(includeText("backward_model.txt"), "\n")
+        text
+      }) 
+    }
+  }
+})
+
+observeEvent(input$var_selection_model, {
+  if (input$tabs == "tab3") {
+    # Forward Selection ####
+    if (input$var_selection_model == "Forward") {
+      output$table_BPE <- NULL  # Reset output$table_BPE
+      output$table_FPE <- renderText({
+        text <- paste(includeText("forward_model.txt"), "\n")
+        text
+      }) 
+    }
+  }
+})
+
+observeEvent(input$var_selection_model, {
+  if (input$tabs == "tab3") {
+    # Stepwise Selection ####
+    if (input$var_selection_model == "Stepwise") {
+      output$table_BPE <- NULL  # Reset output$table_BPE
+      output$table_FPE <- NULL  # Reset output$table_FPE
+      output$table_SPE <- renderText({
+        text <- paste(includeText("stepwise_model.txt"), "\n")
+        text
+      }) 
+    }
+  }
+})
+
+  
+  
+  
+  
+  
+  
+} # END SERVER
+```
+
+```{r echo = FALSE}
+# Run the Shiny app
+shinyApp(ui, server)
+```
