@@ -1,7 +1,7 @@
 name: "Lani Lewis"
 always_allow_html: true
 navbar:
-  title: "SMU Data Science Protfolio"
+  title: "SMU Data Science Portfolio"
   type: "inverse"
   left:
     - text: "Home"
@@ -10,53 +10,64 @@ navbar:
     - text: "Case Studies"
       icon: fa-file
       menu:
-          - text: "Budweiser Beer Case Study"
-            href: EDA1.html
-          - text: "Shiny App | Budweiser Beer"
-            href: https://blackjuliet.shinyapps.io/Beers/
-          - text: "Barbie Bungee Activity"
-            href: Bungee.html
-          - text: "Frito Lay Employee Attrition Activity"
-            href: Employee-Attrition.html
-          - text: "Frito Lay Emp Attr Predictions"
-            href: EmployeeAttritionPredictions.html
-          - text: "Shiny App | Employee Attrition"
-            href: https://blackjuliet.shinyapps.io/Employee_Attrition/
-          - text: "Shiny App | Kaggle House Prediction"
-            href: https://blackjuliet.shinyapps.io/Kaggle_HousePricePrediction_G7/
-          - text: "Spotify - Azure Website_Shiny App | DBMS G.P."
-            href: https://azrhythmwebapp.azurewebsites.net/
-          - text: "QTW: Case Study 5 - PREDICT BANKRUPTCY"
-            href: CaseStudy5.pdf
-            href: CS5.ipynb
-          - text: "QTW: Case Study 6 - PREDICT NEW PARTICLES"
-            href: CaseStudy6.pdf
-            href: CS6.ipynb
-          - text: "QTW: Case Study 7 - BINARY PREDICTION"
-            href: CaseStudy7.pdf
-            href: CS7.ipynb  
+        - text: "Budweiser Beer Case Study"
+          href: EDA1.html
+        - text: "Shiny App | Budweiser Beer"
+          href: https://blackjuliet.shinyapps.io/Beers/
+        - text: "Barbie Bungee Activity"
+          href: Bungee.html
+        - text: "Frito Lay Employee Attrition Activity"
+          href: Employee-Attrition.html
+        - text: "Frito Lay Emp Attr Predictions"
+          href: EmployeeAttritionPredictions.html
+        - text: "Shiny App | Employee Attrition"
+          href: https://blackjuliet.shinyapps.io/Employee_Attrition/
+        - text: "Shiny App | Kaggle House Prediction"
+          href: https://blackjuliet.shinyapps.io/Kaggle_HousePricePrediction_G7/
+        - text: "Spotify - Azure Website_Shiny App | DBMS G.P."
+          href: https://azrhythmwebapp.azurewebsites.net/
+        - text: "QTW: Case Study 5 - PREDICT BANKRUPTCY"
+          icon: fa-folder
+          menu:
+            - text: "Case Study 5 Essay"
+              href: CaseStudy5.pdf
+            - text: "Case Study 5 Jupyter Notebook"
+              href: CS5.ipynb
+        - text: "QTW: Case Study 6 - PREDICT NEW PARTICLES"
+          icon: fa-folder
+          menu:
+            - text: "Case Study 6 Essay"
+              href: CaseStudy6.pdf
+            - text: "Case Study 6 Jupyter Notebook"
+              href: CS6.ipynb
+        - text: "QTW: Case Study 7 - BINARY PREDICTION"
+          icon: fa-folder
+          menu:
+            - text: "Case Study 7 Essay"
+              href: CaseStudy7.pdf
+            - text: "Case Study 7 Jupyter Notebook"
+              href: CS7.ipynb
     - text: "Presentations"
       icon: fa-folder
       menu:
-          - text: "Budweiser Beer Presentation"
-            href: https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4
-          - text: "Frito Lay Employee Att. Pres."
-            href: https://smu-2u-com.zoom.us/rec/share/5aD2nLCH7D97Ms2iXO3UybsUntoQ6kzo_gfVvoU5ARexKfgi8dwTObvjADRBJf0L.zxcnwP4HP3ZeLlb7 
-          - text: "Spotify | DBMS G.P. Pres."
-            href: Azure Rhythm_Cloud Miners.pdf
+        - text: "Budweiser Beer Presentation"
+          href: https://smu-2u-com.zoom.us/rec/share/Jp2e-8iKnm4Nl42w2wk4x6A8IvM2-4itM_em9TrLCiRRYfRo-YWjwpIfc6cGjOGv.LncLnHYQqOlTRrH4
+        - text: "Frito Lay Employee Att. Pres."
+          href: https://smu-2u-com.zoom.us/rec/share/5aD2nLCH7D97Ms2iXO3UybsUntoQ6kzo_gfVvoU5ARexKfgi8dwTObvjADRBJf0L.zxcnwP4HP3ZeLlb7 
+        - text: "Spotify | DBMS G.P. Pres."
+          href: Azure Rhythm_Cloud Miners.pdf
     - text: "Project Documentation"
       icon: fa-folder
       menu:
-          - text: "Kaggle House Prediction Doc."
-            href: G7_Kaggle_HousePricePrediction.pdf 
-          - text: "Spotify | DBMS G.P. Doc."
-            href: CloudMiner_AzureRhythm.pdf
+        - text: "Kaggle House Prediction Doc."
+          href: G7_Kaggle_HousePricePrediction.pdf 
+        - text: "Spotify | DBMS G.P. Doc."
+          href: CloudMiner_AzureRhythm.pdf
     - text: "Tableau Dashboards"
       icon: fa-folder
       menu:
-          - text: "NASA Inventions"
-            href: https://public.tableau.com/views/NASAInventions/NASAInventions?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link       
-
+        - text: "NASA Inventions"
+          href: https://public.tableau.com/views/NASAInventions/NASAInventions?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
 
 output:
   html_document:
