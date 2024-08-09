@@ -26,6 +26,15 @@ navbar:
             href: https://blackjuliet.shinyapps.io/Kaggle_HousePricePrediction_G7/
           - text: "Spotify - Azure Website_Shiny App | DBMS G.P."
             href: https://azrhythmwebapp.azurewebsites.net/
+          - text: "QTW: Case Study 5 - PREDICT BANKRUPTCY"
+            href: CaseStudy5.pdf
+            href: CS5.ipynb
+          - text: "QTW: Case Study 6 - PREDICT NEW PARTICLES"
+            href: CaseStudy6.pdf
+            href: CS6.ipynb
+          - text: "QTW: Case Study 7 - BINARY PREDICTION"
+            href: CaseStudy7.pdf
+            href: CS7.ipynb  
     - text: "Presentations"
       icon: fa-folder
       menu:
@@ -42,6 +51,11 @@ navbar:
             href: G7_Kaggle_HousePricePrediction.pdf 
           - text: "Spotify | DBMS G.P. Doc."
             href: CloudMiner_AzureRhythm.pdf
+    - text: "Tableau Dashboards"
+      icon: fa-folder
+      menu:
+          - text: "NASA Inventions"
+            href: https://public.tableau.com/views/NASAInventions/NASAInventions?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link       
 
 
 output:
